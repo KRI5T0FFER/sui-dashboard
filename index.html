@@ -213,9 +213,12 @@
             
             const width = canvas.width;
             const height = canvas.height;
-            const padding = 60;
-            const chartWidth = width - padding * 2;
-            const chartHeight = height - padding * 2;
+            const paddingLeft = 80;
+            const paddingRight = 80;
+            const paddingTop = 40;
+            const paddingBottom = 60;
+            const chartWidth = width - paddingLeft - paddingRight;
+            const chartHeight = height - paddingTop - paddingBottom;
             
             // Clear canvas
             ctx.clearRect(0, 0, width, height);
@@ -226,8 +229,8 @@
             ctx.lineWidth = 1.5;
             
             data.forEach((point, i) => {
-                const x = padding + (i / (data.length - 1)) * chartWidth;
-                const y = padding + chartHeight - ((point[1] - min) / range) * chartHeight;
+                const x = paddingLeft + (i / (data.length - 1)) * chartWidth;
+                const y = paddingTop + chartHeight - ((point[1] - min) / range) * chartHeight;
                 
                 if (i === 0) {
                     ctx.moveTo(x, y);
@@ -246,8 +249,8 @@
             // Y-axis labels
             for (let i = 0; i <= 4; i++) {
                 const value = min + (range * i / 4);
-                const y = padding + chartHeight - (i / 4) * chartHeight;
-                ctx.fillText(`$${value.toFixed(3)}`, padding - 15, y + 4);
+                const y = paddingTop + chartHeight - (i / 4) * chartHeight;
+                ctx.fillText(`$${value.toFixed(3)}`, paddingLeft - 15, y + 4);
             }
             
             // X-axis labels
@@ -257,7 +260,7 @@
                 const index = Math.floor((data.length - 1) * i / (labelCount - 1));
                 const point = data[index];
                 const date = new Date(point[0]);
-                const x = padding + (index / (data.length - 1)) * chartWidth;
+                const x = paddingLeft + (index / (data.length - 1)) * chartWidth;
                 
                 let label;
                 if (currentTimeframe === '1') {
@@ -268,7 +271,7 @@
                     label = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
                 }
                 
-                ctx.fillText(label, x, height - padding + 25);
+                ctx.fillText(label, x, height - paddingBottom + 25);
             }
         }
         
