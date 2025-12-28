@@ -5,22 +5,229 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SUI Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
 </head>
 <body>
     <div id="root"></div>
     
-    <!-- Load React -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Load Recharts dependencies -->
-    <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
-    <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
-    
-    <!-- Load Babel -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Load your app -->
-    <script type="text/babel" src="app.js"></script>
+    <script>
+    const { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } = Recharts;
+    const { useState, useEffect, createElement } = React;
+
+    function SuiDashboard() {
+      const [price, setPrice] = useState(null);
+      const [change24h, setChange24h] = useState(null);
+      const [chartData, setChartData] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [timeframe, setTimeframe] = useState('7');
+
+      useEffect(() => {
+        fetchSuiData();
+        const interval = setInterval(fetchSuiData, 60000);
+        return () => clearInterval(interval);
+      }, [timeframe]);
+
+      const fetchSuiData = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+          
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          const priceResponse = await fetch(
+            'https://api.coingecko.com/api/v3/simple/price?ids=sui&vs_currencies=usd&include_24hr_change=true',
+            { headers: { 'Accept': 'application/json' } }
+          );
+          
+          if (!priceResponse.ok) throw new Error('Rate limit reached');
+          
+          const priceData = await priceResponse.json();
+          
+          if (priceData.sui) {
+            setPrice(priceData.sui.usd);
+            setChange24h(priceData.sui.usd_24h_change);
+          }
+
+          const days = timeframe === 'max' ? 'max' : timeframe;
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          const chartResponse = await fetch(
+            `https://api.coingecko.com/api/v3/coins/sui/market_chart?vs_currency=usd&days=${days}`,
+            { headers: { 'Accept': 'application/json' } }
+          );
+          
+          if (!chartResponse.ok) throw new Error('Unable to fetch chart data');
+          
+          const chartJson = await chartResponse.json();
+          let prices = chartJson.prices;
+          
+          const maxPoints = 100;
+          if (prices.length > maxPoints) {
+            const step = Math.floor(prices.length / maxPoints);
+            prices = prices.filter((_, index) => index % step === 0);
+          }
+          
+          const formattedData = prices.map(([timestamp, price]) => {
+            const date = new Date(timestamp);
+            let timeLabel;
+            
+            if (timeframe === '1') {
+              timeLabel = date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+            } else if (timeframe === '7' || timeframe === '30') {
+              timeLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            } else {
+              timeLabel = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+            }
+            
+            return { time: timeLabel, price: price };
+          });
+          
+          setChartData(formattedData);
+          setLoading(false);
+        } catch (error) {
+          console.error('Error:', error);
+          setError(error.message);
+          setLoading(false);
+        }
+      };
+
+      const CustomTooltip = ({ active, payload }) => {
+        if (active && payload && payload.length) {
+          return createElement('div', {
+            className: 'bg-white/90 backdrop-blur px-3 py-2 rounded'
+          }, [
+            createElement('p', { className: 'text-xs text-gray-500', key: 'time' }, payload[0].payload.time),
+            createElement('p', { className: 'text-sm font-medium text-gray-900', key: 'price' }, 
+              `$${payload[0].value.toFixed(4)}`
+            )
+          ]);
+        }
+        return null;
+      };
+
+      if (loading && !price) {
+        return createElement('div', { className: 'min-h-screen bg-white flex items-center justify-center' },
+          createElement('div', { className: 'text-blue-500 text-lg font-light' }, 'Loading Sui data...')
+        );
+      }
+
+      if (error && !price) {
+        return createElement('div', { className: 'min-h-screen bg-white flex items-center justify-center' },
+          createElement('div', { className: 'text-center' }, [
+            createElement('div', { className: 'text-red-500 text-lg font-light mb-2', key: 'err' }, 'Unable to load data'),
+            createElement('div', { className: 'text-gray-400 text-sm mb-4', key: 'msg' }, error),
+            createElement('button', {
+              onClick: fetchSuiData,
+              className: 'text-blue-500 text-sm hover:text-blue-600',
+              key: 'btn'
+            }, 'Try Again')
+          ])
+        );
+      }
+
+      return createElement('div', { className: 'min-h-screen bg-white py-20 px-8' }, [
+        createElement('div', { className: 'fixed top-8 right-8', key: 'nav' },
+          createElement('a', {
+            href: '#more',
+            className: 'text-sm font-light text-gray-400 hover:text-blue-500 transition-colors'
+          }, 'More →')
+        ),
+        createElement('div', { className: 'min-h-screen flex items-center justify-center', key: 'main' },
+          createElement('div', { className: 'w-full max-w-5xl' }, [
+            createElement('div', { className: 'mb-24 text-center', key: 'header' }, [
+              createElement('h1', {
+                className: 'text-7xl font-extralight text-gray-900 mb-3 tracking-tight',
+                key: 'title'
+              }, 'SUI'),
+              createElement('div', { className: 'flex items-baseline gap-8 justify-center', key: 'prices' }, [
+                createElement('div', { className: 'text-4xl font-light text-gray-900', key: 'price' },
+                  price ? `$${price.toFixed(4)}` : '--'
+                ),
+                createElement('div', {
+                  className: `text-xl font-light ${change24h >= 0 ? 'text-blue-500' : 'text-red-400'}`,
+                  key: 'change'
+                }, change24h ? `${change24h >= 0 ? '+' : ''}${change24h.toFixed(2)}%` : '--')
+              ])
+            ]),
+            createElement('div', { className: 'mb-12', key: 'chart-section' }, [
+              createElement('div', { className: 'flex gap-6 mb-8 justify-center', key: 'buttons' },
+                [
+                  { label: '24H', value: '1' },
+                  { label: '1W', value: '7' },
+                  { label: '1M', value: '30' },
+                  { label: '3M', value: '90' },
+                  { label: '1Y', value: '365' },
+                  { label: 'ALL', value: 'max' }
+                ].map(tf =>
+                  createElement('button', {
+                    key: tf.value,
+                    onClick: () => setTimeframe(tf.value),
+                    disabled: loading,
+                    className: `text-sm font-light transition-colors ${
+                      timeframe === tf.value ? 'text-blue-500' : 'text-gray-300 hover:text-gray-500'
+                    } ${loading ? 'opacity-50' : ''}`
+                  }, tf.label)
+                )
+              ),
+              loading ?
+                createElement('div', { className: 'h-[400px] flex items-center justify-center', key: 'loading' },
+                  createElement('div', { className: 'text-gray-300 text-sm' }, 'Loading chart...')
+                )
+              : chartData.length > 0 ?
+                createElement(ResponsiveContainer, { width: '100%', height: 400, key: 'chart' },
+                  createElement(LineChart, { data: chartData }, [
+                    createElement(XAxis, {
+                      key: 'x',
+                      dataKey: 'time',
+                      axisLine: false,
+                      tickLine: false,
+                      tick: { fill: '#d1d5db', fontSize: 11 },
+                      dy: 15
+                    }),
+                    createElement(YAxis, {
+                      key: 'y',
+                      axisLine: false,
+                      tickLine: false,
+                      tick: { fill: '#d1d5db', fontSize: 11 },
+                      tickFormatter: v => `$${v.toFixed(3)}`,
+                      dx: -15
+                    }),
+                    createElement(Tooltip, {
+                      key: 't',
+                      content: CustomTooltip,
+                      cursor: { stroke: '#e5e7eb', strokeWidth: 1 }
+                    }),
+                    createElement(Line, {
+                      key: 'l',
+                      type: 'monotone',
+                      dataKey: 'price',
+                      stroke: '#3b82f6',
+                      strokeWidth: 1.5,
+                      dot: false,
+                      activeDot: { r: 3, fill: '#3b82f6', strokeWidth: 0 }
+                    })
+                  ])
+                )
+              : createElement('div', { className: 'h-[400px] flex items-center justify-center', key: 'nodata' },
+                  createElement('div', { className: 'text-gray-300 text-sm' }, 'No chart data')
+                )
+            ]),
+            createElement('div', { className: 'text-gray-300 text-xs font-light text-center', key: 'footer' },
+              `${timeframe === '1' ? '24 hour' : timeframe === '7' ? '7 day' : timeframe === '30' ? '1 month' : 
+                timeframe === '90' ? '3 month' : timeframe === '365' ? '1 year' : 'All time'} performance · Data by CoinGecko`
+            )
+          ])
+        )
+      ]);
+    }
+
+    ReactDOM.render(
+      React.createElement(SuiDashboard),
+      document.getElementById('root')
+    );
+    </script>
 </body>
 </html>
