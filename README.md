@@ -1,5 +1,3 @@
-# sui-dashboard
-
 # SUI Price Dashboard
 
 A minimalist, Bloomberg-style dashboard for tracking SUI cryptocurrency price and performance.
