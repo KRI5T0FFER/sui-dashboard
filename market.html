@@ -133,10 +133,21 @@
             font-weight: 300;
         }
         
+        .token-link {
+            text-decoration: none;
+            color: inherit;
+        }
+        
         .token-info {
             display: flex;
             align-items: center;
             gap: 1rem;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .token-info:hover {
+            opacity: 0.7;
         }
         
         .token-icon {
@@ -384,13 +395,15 @@
                         ${marketData.map((token, index) => `
                             <tr>
                                 <td>
-                                    <div class="token-info">
-                                        <div class="token-icon">${token.symbol.substring(0, 2)}</div>
-                                        <div class="token-name">
-                                            <span class="token-symbol">${token.symbol}</span>
-                                            <span class="token-full-name">${token.name}</span>
+                                    <a href="https://www.coingecko.com/en/coins/${token.id}" target="_blank" class="token-link">
+                                        <div class="token-info">
+                                            <div class="token-icon">${token.symbol.substring(0, 2)}</div>
+                                            <div class="token-name">
+                                                <span class="token-symbol">${token.symbol}</span>
+                                                <span class="token-full-name">${token.name}</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 </td>
                                 <td class="price">${formatPrice(token.price)}</td>
                                 <td class="${token.change24h >= 0 ? 'change-positive' : 'change-negative'}">
