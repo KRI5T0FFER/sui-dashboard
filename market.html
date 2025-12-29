@@ -67,7 +67,7 @@
         }
         
         .page-header {
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
         }
         
         .page-title {
@@ -87,12 +87,14 @@
         
         /* Search Bar */
         .search-container {
-            margin-bottom: 2rem;
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1rem;
         }
         
         .search-input {
             width: 100%;
-            max-width: 400px;
+            max-width: 350px;
             padding: 0.75rem 1rem;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -313,6 +315,15 @@
             .chart-cell {
                 display: none;
             }
+            
+            .search-container {
+                justify-content: flex-start;
+                margin-bottom: 1.5rem;
+            }
+            
+            .search-input {
+                max-width: 100%;
+            }
         }
     </style>
 </head>
@@ -334,13 +345,13 @@
             <p class="page-subtitle">SUI ecosystem tokens · Real-time data</p>
         </div>
         
-        <!-- Search Bar -->
+        <!-- Search Bar (above table, right-aligned) -->
         <div class="search-container">
             <input 
                 type="text" 
                 id="search-input" 
                 class="search-input" 
-                placeholder="Search by token name or category (e.g., Dex, Lending, Meme)..."
+                placeholder="Search by token or category (e.g., Dex, Lending, CLOB)..."
                 oninput="filterTokens()"
             />
         </div>
@@ -354,7 +365,7 @@
         // Token list with main categories and subcategories
         const tokens = [
             // DeFi - Dex
-            { symbol: 'DEEP', name: 'DeepBook', id: 'deepbook', category: 'DeFi', subcategories: ['Dex'] },
+            { symbol: 'DEEP', name: 'DeepBook', id: 'deepbook', category: 'DeFi', subcategories: ['Dex', 'CLOB'] },
             { symbol: 'CETUS', name: 'Cetus', id: 'cetus-protocol', category: 'DeFi', subcategories: ['Dex'] },
             { symbol: 'MOM', name: 'Momentum', id: 'momentum-2', category: 'DeFi', subcategories: ['Dex'] },
             { symbol: 'BLUE', name: 'Bluefin', id: 'bluefin', category: 'DeFi', subcategories: ['Dex', 'Trading'] },
@@ -362,8 +373,8 @@
             // DeFi - Lending
             { symbol: 'SCA', name: 'Scallop', id: 'scallop-2', category: 'DeFi', subcategories: ['Lending'] },
             { symbol: 'NAVX', name: 'Navi', id: 'navi', category: 'DeFi', subcategories: ['Lending', 'Staking'] },
-            { symbol: 'SEND', name: 'Suilend', id: 'suilend', category: 'DeFi', subcategories: ['Lending', 'Staking'] },
-            { symbol: 'ALPHA', name: 'AlphaFi', id: 'alpha-fi', category: 'DeFi', subcategories: ['Lending'] },
+            { symbol: 'SEND', name: 'Suilend', id: 'suilend', category: 'DeFi', subcategories: ['Lending', 'Staking', 'AMM'] },
+            { symbol: 'ALPHA', name: 'AlphaFi', id: 'alpha-fi', category: 'DeFi', subcategories: ['Lending', 'Staking'] },
             
             // DeFi - Staking
             { symbol: 'HAE', name: 'Haedal', id: 'haedal-protocol', category: 'DeFi', subcategories: ['Staking'] },
