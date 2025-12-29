@@ -399,7 +399,7 @@
             { symbol: 'BUT', name: 'Bucket', pairAddress: '0xbut', category: 'DeFi', subcategories: ['Stablecoin'], searchUrl: 'bucket' },
             
             // Infrastructure
-            { symbol: 'WAL', name: 'Walrus', pairAddress: '0xwal', category: 'Infrastructure', subcategories: ['Data Storage'], searchUrl: 'walrus' },
+            { symbol: 'WAL', name: 'Walrus', pairAddress: '0xa8479545ff8a71659a7a3b5a2149cab68c5468a67aab8b18f62e4b42623e341e', category: 'Infrastructure', subcategories: ['Data Storage'], searchUrl: 'walrus' },
             { symbol: 'IKA', name: 'Ika', pairAddress: '0xika', category: 'Infrastructure', subcategories: ['Interoperability'], searchUrl: 'ika' },
             { symbol: 'NS', name: 'SuiNS', pairAddress: '0xns', category: 'Infrastructure', subcategories: ['Domain'], searchUrl: 'suins' },
             
@@ -432,35 +432,69 @@
                 // Fetch data for all tokens from DexScreener
                 const promises = tokens.map(async token => {
                     try {
-                        // Search for token on Sui network
-                        const response = await fetch(
-                            `https://api.dexscreener.com/latest/dex/search?q=${token.searchUrl}%20sui`
-                        );
+                        // Try multiple search variations
+                        const searchTerms = [
+                            `${token.symbol} sui`,
+                            `${token.name} sui`,
+                            token.symbol,
+                            token.name
+                        ];
                         
-                        if (!response.ok) {
-                            console.warn(`Failed to fetch ${token.symbol}`);
-                            return null;
+                        let bestPair = null;
+                        
+                        for (const searchTerm of searchTerms) {
+                            const response = await fetch(
+                                `https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(searchTerm)}`
+                            );
+                            
+                            if (!response.ok) continue;
+                            
+                            const data = await response.json();
+                            
+                            // Find Sui pairs that match this token
+                            const suiPairs = data.pairs?.filter(p => {
+                                if (p.chainId !== 'sui') return false;
+                                
+                                const baseMatch = p.baseToken?.symbol?.toUpperCase() === token.symbol.toUpperCase();
+                                const quoteMatch = p.quoteToken?.symbol?.toUpperCase() === token.symbol.toUpperCase();
+                                
+                                return baseMatch || quoteMatch;
+                            });
+                            
+                            if (suiPairs && suiPairs.length > 0) {
+                                // Get the pair with highest liquidity
+                                bestPair = suiPairs.sort((a, b) => 
+                                    (parseFloat(b.liquidity?.usd) || 0) - (parseFloat(a.liquidity?.usd) || 0)
+                                )[0];
+                                
+                                console.log(`✓ ${token.symbol}: Found via "${searchTerm}" with $${formatLiquidity(parseFloat(bestPair.liquidity?.usd || 0))} liquidity`);
+                                break;
+                            }
                         }
                         
-                        const data = await response.json();
-                        
-                        // Find the best matching pair (prefer SUI pairs, highest liquidity)
-                        const suiPairs = data.pairs?.filter(p => 
-                            p.chainId === 'sui' && 
-                            (p.baseToken?.symbol === token.symbol || p.quoteToken?.symbol === token.symbol)
-                        );
-                        
-                        if (!suiPairs || suiPairs.length === 0) {
-                            console.warn(`No pairs found for ${token.symbol}`);
-                            return null;
+                        if (!bestPair) {
+                            console.warn(`⚠ ${token.symbol}: No data found`);
+                            // Return token with zero values to still show it in the table
+                            return {
+                                symbol: token.symbol,
+                                name: token.name,
+                                category: token.category,
+                                subcategories: token.subcategories,
+                                price: 0,
+                                marketCap: 0,
+                                fdv: 0,
+                                volume: 0,
+                                change24h: 0,
+                                liquidity: 0,
+                                pairAddress: null,
+                                dexUrl: null,
+                                logo: null
+                            };
                         }
                         
-                        // Get the pair with highest liquidity
-                        const bestPair = suiPairs.sort((a, b) => 
-                            (parseFloat(b.liquidity?.usd) || 0) - (parseFloat(a.liquidity?.usd) || 0)
-                        )[0];
-                        
-                        console.log(`✓ ${token.symbol}: Found pair with $${formatNumber(parseFloat(bestPair.liquidity?.usd || 0))} liquidity`);
+                        // Determine which token is the base (our token vs pairing token like SUI/USDC)
+                        const isBase = bestPair.baseToken?.symbol?.toUpperCase() === token.symbol.toUpperCase();
+                        const tokenData = isBase ? bestPair.baseToken : bestPair.quoteToken;
                         
                         return {
                             symbol: token.symbol,
@@ -468,29 +502,40 @@
                             category: token.category,
                             subcategories: token.subcategories,
                             price: parseFloat(bestPair.priceUsd) || 0,
-                            marketCap: parseFloat(bestPair.fdv) || parseFloat(bestPair.marketCap) || 0,
+                            marketCap: parseFloat(bestPair.marketCap) || 0,
                             fdv: parseFloat(bestPair.fdv) || 0,
                             volume: parseFloat(bestPair.volume?.h24) || 0,
                             change24h: parseFloat(bestPair.priceChange?.h24) || 0,
                             liquidity: parseFloat(bestPair.liquidity?.usd) || 0,
                             pairAddress: bestPair.pairAddress,
                             dexUrl: bestPair.url,
-                            logo: bestPair.info?.imageUrl || null
+                            logo: tokenData?.image || bestPair.info?.imageUrl || null
                         };
                     } catch (error) {
-                        console.error(`Error fetching ${token.symbol}:`, error);
-                        return null;
+                        console.error(`✗ ${token.symbol}: ${error.message}`);
+                        // Return token with zero values to still show it
+                        return {
+                            symbol: token.symbol,
+                            name: token.name,
+                            category: token.category,
+                            subcategories: token.subcategories,
+                            price: 0,
+                            marketCap: 0,
+                            fdv: 0,
+                            volume: 0,
+                            change24h: 0,
+                            liquidity: 0,
+                            pairAddress: null,
+                            dexUrl: null,
+                            logo: null
+                        };
                     }
                 });
                 
-                const results = await Promise.all(promises);
-                marketData = results.filter(r => r !== null);
+                marketData = await Promise.all(promises);
                 
-                console.log(`Successfully loaded ${marketData.length}/${tokens.length} tokens`);
-                
-                if (marketData.length === 0) {
-                    throw new Error('No market data available');
-                }
+                const tokensWithData = marketData.filter(t => t.price > 0).length;
+                console.log(`Successfully loaded data for ${tokensWithData}/${tokens.length} tokens`);
                 
                 // Initial sort by market cap
                 sortByMarketCap();
@@ -500,6 +545,12 @@
                 document.getElementById('table-container').innerHTML = 
                     '<div class="error">Unable to load market data. Please try again later.</div>';
             }
+        }
+        
+        function formatLiquidity(num) {
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+            return num.toFixed(0);
         }
         
         function sortByMarketCap() {
