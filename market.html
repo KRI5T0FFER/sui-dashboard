@@ -282,7 +282,7 @@
             border: 1px solid rgba(251, 191, 36, 0.2);
         }
         
-        .category-game {
+        .category-gaming {
             background: rgba(16, 185, 129, 0.1);
             color: #10b981;
             border: 1px solid rgba(16, 185, 129, 0.2);
@@ -421,8 +421,9 @@
             // Brand
             { symbol: 'DMC', name: 'Delorean', pairAddress: '0xa288810f820498f7c2bca41cfadea3e99bd152b3dbeb2c282bb4b9c909f71c6d', category: 'Brand', subcategories: ['Car'], searchUrl: 'delorean' },
             
-            // Game
-            { symbol: 'FAITH', name: 'Faith', pairAddress: '0xc4c09f20f63d6dc10bf5c2163381b122c5368c54233820fd5fd3929fa9dac977', category: 'Game', subcategories: ['Luck Games'], searchUrl: 'faith' },
+            // Gaming
+            { symbol: 'FAITH', name: 'Faith', pairAddress: '0xc4c09f20f63d6dc10bf5c2163381b122c5368c54233820fd5fd3929fa9dac977', category: 'Gaming', subcategories: ['Luck Games'], searchUrl: 'faith' },
+            { symbol: 'TAKE', name: 'Overtake', pairAddress: '0xe10fff1d97e02ef48ead312be0991dc542fe50459cb3c7a810bb69ada6f159f9', category: 'Gaming', subcategories: ['Trading'], searchUrl: 'overtake' },
             
             // Other categories
             { symbol: 'ALKIMI', name: 'Alkimi', pairAddress: '0x5cf7e2ec9311d9057e43477a29bd457c51beeb1ddcd151c385a295dbb3c0fb18', category: 'Ads', subcategories: [], searchUrl: 'alkimi' },
@@ -443,7 +444,7 @@
                 'Gambling': 'gambling',
                 'Meme': 'meme',
                 'Brand': 'brand',
-                'Game': 'game'
+                'Gaming': 'gaming'
             };
             return `category-${categoryMap[category] || 'defi'}`;
         }
