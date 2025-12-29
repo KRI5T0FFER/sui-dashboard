@@ -293,7 +293,7 @@
                 <canvas id="chart"></canvas>
             </div>
             
-            <div class="footer" id="footer">7 day performance · Data by CoinGecko</div>
+            <div class="footer" id="footer">7 day performance · Data by DexScreener & CoinGecko</div>
         </div>
     </div>
     
@@ -304,40 +304,51 @@
         
         async function fetchData() {
             try {
-                // Fetch CoinGecko data
-                const response = await fetch('https://api.coingecko.com/api/v3/coins/sui?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false');
+                // Fetch SUI data from DexScreener
+                const response = await fetch('https://api.dexscreener.com/latest/dex/search?q=sui%20usdc');
                 const data = await response.json();
                 
-                if (data.market_data) {
+                // Find the main SUI/USDC pair with highest liquidity
+                const suiPairs = data.pairs?.filter(p => 
+                    p.chainId === 'sui' && 
+                    p.baseToken?.symbol === 'SUI'
+                );
+                
+                if (suiPairs && suiPairs.length > 0) {
+                    // Get the pair with highest liquidity
+                    const mainPair = suiPairs.sort((a, b) => 
+                        (parseFloat(b.liquidity?.usd) || 0) - (parseFloat(a.liquidity?.usd) || 0)
+                    )[0];
+                    
+                    console.log('Using SUI pair:', mainPair);
+                    
                     // Price
-                    const price = data.market_data.current_price.usd;
+                    const price = parseFloat(mainPair.priceUsd);
                     document.getElementById('price').textContent = `$${price.toFixed(4)}`;
                     
-                    const priceChange = data.market_data.price_change_percentage_24h;
+                    const priceChange = parseFloat(mainPair.priceChange?.h24) || 0;
                     const priceChangeEl = document.getElementById('price-change');
                     priceChangeEl.textContent = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%`;
                     priceChangeEl.className = priceChange >= 0 ? 'metric-change positive' : 'metric-change negative';
                     
                     // Market Cap
-                    const mcap = data.market_data.market_cap.usd;
+                    const mcap = parseFloat(mainPair.marketCap) || 0;
                     document.getElementById('market-cap').textContent = `$${formatLargeNumber(mcap)}`;
                     
-                    const mcapChange = data.market_data.market_cap_change_percentage_24h;
                     const mcapChangeEl = document.getElementById('mcap-change');
-                    mcapChangeEl.textContent = `${mcapChange >= 0 ? '+' : ''}${mcapChange.toFixed(2)}%`;
-                    mcapChangeEl.className = mcapChange >= 0 ? 'metric-change positive' : 'metric-change negative';
+                    mcapChangeEl.textContent = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%`;
+                    mcapChangeEl.className = priceChange >= 0 ? 'metric-change positive' : 'metric-change negative';
                     
                     // FDV
-                    const fdv = data.market_data.fully_diluted_valuation.usd;
+                    const fdv = parseFloat(mainPair.fdv) || 0;
                     document.getElementById('fdv').textContent = `$${formatLargeNumber(fdv)}`;
                     
-                    const fdvChange = priceChange;
                     const fdvChangeEl = document.getElementById('fdv-change');
-                    fdvChangeEl.textContent = `${fdvChange >= 0 ? '+' : ''}${fdvChange.toFixed(2)}%`;
-                    fdvChangeEl.className = fdvChange >= 0 ? 'metric-change positive' : 'metric-change negative';
+                    fdvChangeEl.textContent = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%`;
+                    fdvChangeEl.className = priceChange >= 0 ? 'metric-change positive' : 'metric-change negative';
                     
                     // Volume
-                    const volume = data.market_data.total_volume.usd;
+                    const volume = parseFloat(mainPair.volume?.h24) || 0;
                     document.getElementById('volume').textContent = `$${formatLargeNumber(volume)}`;
                     document.getElementById('volume-change').textContent = '';
                 }
@@ -358,9 +369,9 @@
                     tvlChangeEl.className = tvlChange >= 0 ? 'metric-change positive' : 'metric-change negative';
                 }
                 
+                // Fetch chart data from CoinGecko (still using this for historical chart)
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
-                // Fetch chart data
                 const days = currentTimeframe;
                 const chartRes = await fetch(`https://api.coingecko.com/api/v3/coins/sui/market_chart?vs_currency=usd&days=${days}`);
                 const chartJson = await chartRes.json();
@@ -645,7 +656,7 @@
                 '365': '1 year',
                 'max': 'All time'
             };
-            document.getElementById('footer').textContent = `${footerTexts[tf]} performance · Data by CoinGecko`;
+            document.getElementById('footer').textContent = `${footerTexts[tf]} performance · Data by DexScreener & CoinGecko`;
             
             fetchData();
         }
