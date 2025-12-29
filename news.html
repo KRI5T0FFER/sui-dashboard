@@ -1,1 +1,548 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News — SUITE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Libre+Franklin:wght@200;300;400;500&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Libre Franklin', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            color: #ffffff;
+            text-decoration: none;
+        }
+        
+        .nav-logo .te {
+            color: #3b82f6;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+        }
+        
+        .nav-links a {
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: #6b7280;
+            text-decoration: none;
+            transition: color 0.3s;
+            letter-spacing: 0.05em;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #3b82f6;
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 8rem 3rem 4rem 3rem;
+        }
+        
+        .page-header {
+            max-width: 90rem;
+            margin: 0 auto 3rem auto;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            font-weight: 200;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .page-subtitle {
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: #6b7280;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Two Column Layout */
+        .content-grid {
+            max-width: 90rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+        
+        /* News Articles Section */
+        .news-section {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 300;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+        
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.1), transparent);
+        }
+        
+        /* News Card */
+        .news-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .news-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to right, #3b82f6, transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .news-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .news-card:hover::before {
+            opacity: 1;
+        }
+        
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .news-source {
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: #3b82f6;
+            letter-spacing: 0.05em;
+        }
+        
+        .news-date {
+            font-size: 0.7rem;
+            font-weight: 300;
+            color: #6b7280;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+        
+        .news-title {
+            font-size: 1.125rem;
+            font-weight: 400;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .news-title:hover {
+            color: #3b82f6;
+        }
+        
+        .news-excerpt {
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: #9ca3af;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .news-link {
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: #3b82f6;
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: gap 0.3s ease;
+        }
+        
+        .news-link:hover {
+            gap: 0.75rem;
+        }
+        
+        .news-link::after {
+            content: '→';
+            font-size: 1rem;
+        }
+        
+        /* Social Section */
+        .social-section {
+            position: sticky;
+            top: 8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .social-category {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            padding: 1.5rem;
+        }
+        
+        .social-category-title {
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .social-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .social-link:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(59, 130, 246, 0.2);
+            transform: translateX(4px);
+        }
+        
+        .social-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .social-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .social-icon-fallback {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #3b82f6;
+        }
+        
+        .social-name {
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: #ffffff;
+            flex: 1;
+        }
+        
+        .social-platform {
+            font-size: 0.7rem;
+            font-weight: 300;
+            color: #6b7280;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+        
+        /* Twitter Feed Container */
+        .twitter-feed-container {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            padding: 1.5rem;
+            min-height: 600px;
+        }
+        
+        .twitter-timeline {
+            height: 100% !important;
+        }
+        
+        /* Loading & Error States */
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .social-section {
+                position: relative;
+                top: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 8rem 1.5rem 4rem 1.5rem;
+            }
+            
+            .nav {
+                padding: 1.5rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">SUI<span class="te">TE</span></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="market.html">Market</a>
+            <a href="news.html" class="active">News</a>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Signal</h1>
+            <p class="page-subtitle">Curated news & social · Separating signal from noise</p>
+        </div>
+        
+        <div class="content-grid">
+            <!-- News Articles -->
+            <div class="news-section">
+                <div class="section-header">
+                    <h2 class="section-title">Latest News</h2>
+                    <div class="section-line"></div>
+                </div>
+                
+                <div id="news-container">
+                    <div class="loading">Loading news articles...</div>
+                </div>
+            </div>
+            
+            <!-- X Feed -->
+            <div class="social-section">
+                <div class="section-header">
+                    <h2 class="section-title">Sui Network Updates</h2>
+                    <div class="section-line"></div>
+                </div>
+                
+                <div class="twitter-feed-container">
+                    <a class="twitter-timeline" 
+                       data-theme="dark" 
+                       data-chrome="noheader nofooter noborders transparent"
+                       data-tweet-limit="10"
+                       href="https://twitter.com/SuiNetwork?ref_src=twsrc%5Etfw">
+                       Loading posts from @SuiNetwork...
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // News sources and articles
+        const newsArticles = [
+            {
+                source: 'Sui Blog',
+                title: 'Sui\'s Vision for 2025: Scaling the Future of Web3',
+                excerpt: 'As we enter 2025, Sui continues to push the boundaries of blockchain technology with unprecedented transaction speeds and innovative DeFi infrastructure.',
+                url: 'https://blog.sui.io/',
+                date: '2024-12-28'
+            },
+            {
+                source: 'CoinDesk',
+                title: 'DeepBook Protocol Emerges as Leading Liquidity Solution',
+                excerpt: 'DeepBook\'s on-chain order book architecture is revolutionizing DeFi trading with its CLOB model, offering traditional finance-level execution on blockchain.',
+                url: 'https://www.coindesk.com/',
+                date: '2024-12-27'
+            },
+            {
+                source: 'The Block',
+                title: 'Walrus Protocol Launches Decentralized Storage Network',
+                excerpt: 'Walrus brings decentralized storage to Sui ecosystem, enabling developers to build applications with efficient, censorship-resistant data storage.',
+                url: 'https://www.theblock.co/',
+                date: '2024-12-26'
+            },
+            {
+                source: 'Decrypt',
+                title: 'Sui TVL Reaches New All-Time High',
+                excerpt: 'Total value locked in Sui DeFi protocols surpasses major milestones as ecosystem adoption accelerates across lending, trading, and staking platforms.',
+                url: 'https://decrypt.co/',
+                date: '2024-12-25'
+            },
+            {
+                source: 'CoinTelegraph',
+                title: 'Move Language Gains Traction Among Developers',
+                excerpt: 'Sui\'s Move programming language attracts developers seeking safer smart contract development with built-in asset protection and resource management.',
+                url: 'https://cointelegraph.com/',
+                date: '2024-12-24'
+            },
+            {
+                source: 'Sui Blog',
+                title: 'Cetus DEX Introduces Advanced Trading Features',
+                excerpt: 'Cetus Protocol unveils concentrated liquidity pools and advanced order types, bringing sophisticated trading tools to Sui DeFi ecosystem.',
+                url: 'https://blog.sui.io/',
+                date: '2024-12-23'
+            },
+            {
+                source: 'CoinDesk',
+                title: 'Navi Protocol Expands Lending Markets',
+                excerpt: 'Navi introduces new lending markets and enhanced staking rewards, strengthening its position as a leading DeFi lending platform on Sui.',
+                url: 'https://www.coindesk.com/',
+                date: '2024-12-22'
+            },
+            {
+                source: 'The Block',
+                title: 'SuiNS Domain Registrations Surge',
+                excerpt: 'SuiNS sees record domain registrations as users embrace decentralized identity and naming services on the Sui blockchain.',
+                url: 'https://www.theblock.co/',
+                date: '2024-12-21'
+            },
+            {
+                source: 'Decrypt',
+                title: 'Bluefin Trading Volume Hits New Record',
+                excerpt: 'Bluefin DEX reports unprecedented trading volumes as sophisticated traders migrate to Sui for its low-latency execution and deep liquidity.',
+                url: 'https://decrypt.co/',
+                date: '2024-12-20'
+            },
+            {
+                source: 'CoinTelegraph',
+                title: 'Sui Foundation Announces Developer Grants',
+                excerpt: 'Major grant program launched to support innovative projects building on Sui, focusing on DeFi, gaming, and infrastructure development.',
+                url: 'https://cointelegraph.com/',
+                date: '2024-12-19'
+            },
+            {
+                source: 'Sui Blog',
+                title: 'Scallop Lending Protocol Sees Record Growth',
+                excerpt: 'Scallop reports significant growth in lending activity and total value locked, attracting both retail and institutional users to its platform.',
+                url: 'https://blog.sui.io/',
+                date: '2024-12-18'
+            },
+            {
+                source: 'CoinDesk',
+                title: 'Sui Ecosystem Surpasses 1 Billion Transactions',
+                excerpt: 'Sui blockchain reaches historic milestone with over 1 billion total transactions, demonstrating robust network activity and user adoption.',
+                url: 'https://www.coindesk.com/',
+                date: '2024-12-17'
+            }
+        ];
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays}d ago`;
+            
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+        
+        function renderNews() {
+            const container = document.getElementById('news-container');
+            
+            const html = newsArticles.map(article => `
+                <div class="news-card">
+                    <div class="news-meta">
+                        <span class="news-source">${article.source}</span>
+                        <span class="news-date">${formatDate(article.date)}</span>
+                    </div>
+                    <a href="${article.url}" target="_blank" class="news-title">${article.title}</a>
+                    <p class="news-excerpt">${article.excerpt}</p>
+                    <a href="${article.url}" target="_blank" class="news-link">Read Article</a>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        }
+        
+        // Initialize
+        renderNews();
+    </script>
+    
+    <!-- Twitter Widget Script -->
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</body>
+</html>
