@@ -639,28 +639,20 @@
         <!-- Error Message -->
         <div class="error-message" id="errorMessage"></div>
         
-        <!-- Wallet Connect Section -->
-        <div class="wallet-connect-section" id="connectSection">
-            <h2 class="connect-title">Connect Your Wallet</h2>
-            <p class="connect-subtitle">🔒 Read-only access · No signatures required · Zero risk</p>
+        <!-- Address Input Section -->
+        <div class="address-input-section" id="inputSection">
+            <h2 class="input-title">Enter Wallet Address</h2>
+            <p class="input-subtitle">Tracks spot holdings only · Read-only</p>
             
-            <div class="connect-options">
-                <button class="btn btn-primary" id="connectWalletBtn">
-                    Connect Sui Wallet
-                </button>
-            </div>
-            
-            <div class="manual-input-section">
-                <div class="divider">OR</div>
-                
-                <div class="manual-input">
+            <div class="address-input-container">
+                <div class="address-input">
                     <input 
                         type="text" 
-                        id="manualAddress" 
-                        placeholder="Enter Sui wallet address (0x...)"
+                        id="walletAddressInput" 
+                        placeholder="Paste Sui wallet address (0x...)"
                         spellcheck="false"
                     >
-                    <button class="btn btn-secondary" id="analyzeBtn">Analyze</button>
+                    <button class="btn btn-primary" id="analyzeBtn">Analyze</button>
                 </div>
             </div>
         </div>
@@ -769,13 +761,12 @@
         
         // Event Listeners
         function initializeEventListeners() {
-            document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
-            document.getElementById('analyzeBtn').addEventListener('click', analyzeManualAddress);
+            document.getElementById('analyzeBtn').addEventListener('click', analyzeAddress);
             document.getElementById('copyBtn').addEventListener('click', copyAddress);
-            document.getElementById('disconnectBtn').addEventListener('click', disconnect);
+            document.getElementById('disconnectBtn').addEventListener('click', clearAnalysis);
             
-            document.getElementById('manualAddress').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') analyzeManualAddress();
+            document.getElementById('walletAddressInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') analyzeAddress();
             });
         }
         
@@ -843,27 +834,8 @@
             }
         }
         
-        async function connectWallet() {
-            try {
-                showError('');
-                if (!window.suiWallet) {
-                    showError('Please install a Sui wallet extension');
-                    return;
-                }
-                const accounts = await window.suiWallet.getAccounts();
-                if (!accounts || accounts.length === 0) {
-                    showError('No accounts found');
-                    return;
-                }
-                currentWallet = accounts[0];
-                loadWalletData(currentWallet);
-            } catch (error) {
-                showError('Failed to connect wallet. Try manual input.');
-            }
-        }
-        
-        function analyzeManualAddress() {
-            const address = document.getElementById('manualAddress').value.trim();
+        function analyzeAddress() {
+            const address = document.getElementById('walletAddressInput').value.trim();
             if (!address) {
                 showError('Please enter a wallet address');
                 return;
@@ -878,7 +850,7 @@
         }
         
         async function loadWalletData(address) {
-            document.getElementById('connectSection').style.display = 'none';
+            document.getElementById('inputSection').style.display = 'none';
             document.getElementById('walletDashboard').classList.add('active');
             document.getElementById('walletAddress').textContent = formatAddress(address);
             await Promise.all([loadTokenBalances(address), loadNFTs(address)]);
@@ -1106,11 +1078,11 @@
             });
         }
         
-        function disconnect() {
+        function clearAnalysis() {
             currentWallet = null;
             document.getElementById('walletDashboard').classList.remove('active');
-            document.getElementById('connectSection').style.display = 'block';
-            document.getElementById('manualAddress').value = '';
+            document.getElementById('inputSection').style.display = 'block';
+            document.getElementById('walletAddressInput').value = '';
             showError('');
         }
         
