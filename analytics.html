@@ -1,1 +1,1262 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics — SUITE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        /* Navigation - Exact match to existing site */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            color: #ffffff;
+            text-decoration: none;
+        }
+        .nav-logo .te {
+            color: #3b82f6;
+        }
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+        }
+        .nav-links a {
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: #6b7280;
+            text-decoration: none;
+            transition: color 0.3s;
+            letter-spacing: 0.05em;
+        }
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #3b82f6;
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 90rem;
+            margin: 0 auto;
+            padding: 8rem 3rem 4rem 3rem;
+        }
+        
+        .page-header {
+            margin-bottom: 3rem;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            font-weight: 200;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .page-subtitle {
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: #6b7280;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Wallet Connect Section */
+        .wallet-connect-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .connect-title {
+            font-size: 1.5rem;
+            font-weight: 200;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+        
+        .connect-subtitle {
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            letter-spacing: 0.05em;
+        }
+        
+        .connect-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 300;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.05em;
+            background: none;
+            color: #ffffff;
+        }
+        
+        .btn-primary {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .btn-primary:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-disconnect {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+        
+        .btn-disconnect:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .manual-input-section {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .divider {
+            margin: 2rem 0;
+            color: #6b7280;
+            font-size: 0.75rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+        }
+        
+        .manual-input {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .manual-input input {
+            flex: 1;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 0.875rem;
+            font-weight: 300;
+            transition: all 0.3s;
+        }
+        
+        .manual-input input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .manual-input input::placeholder {
+            color: #6b7280;
+        }
+        
+        /* Wallet Dashboard */
+        .wallet-dashboard {
+            display: none;
+        }
+        
+        .wallet-dashboard.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Wallet Header */
+        .wallet-header {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .wallet-address-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .address-display {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .address-label {
+            font-size: 0.75rem;
+            font-weight: 300;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .address-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #3b82f6;
+            word-break: break-all;
+        }
+        
+        .copy-btn {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            color: #3b82f6;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Stats Grid */
+        .wallet-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .stat-card {
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 300;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+        
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 300;
+            color: #3b82f6;
+        }
+        
+        /* Portfolio Value Card */
+        .portfolio-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .portfolio-label {
+            font-size: 0.75rem;
+            font-weight: 300;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+        
+        .portfolio-value {
+            font-size: 3rem;
+            font-weight: 200;
+            color: #3b82f6;
+            letter-spacing: -0.02em;
+        }
+        
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* Card Styles */
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            padding: 2rem;
+            height: fit-content;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .card-title {
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        /* Token List */
+        .token-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .token-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .token-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .token-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .token-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 400;
+            color: #3b82f6;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+        
+        .token-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .token-symbol {
+            font-weight: 300;
+            font-size: 0.875rem;
+            color: #ffffff;
+        }
+        
+        .token-name {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 300;
+        }
+        
+        .token-amount {
+            text-align: right;
+        }
+        
+        .token-balance {
+            font-weight: 300;
+            font-size: 0.875rem;
+            color: #ffffff;
+        }
+        
+        .token-value {
+            font-size: 0.75rem;
+            color: #3b82f6;
+            font-weight: 300;
+        }
+        
+        /* Transaction List */
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .transaction-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .tx-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+        
+        .tx-type {
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .tx-type.send {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        .tx-type.receive {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+        
+        .tx-type.contract {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .tx-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .tx-hash {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            color: #ffffff;
+            font-weight: 300;
+        }
+        
+        .tx-time {
+            font-size: 0.7rem;
+            color: #6b7280;
+            font-weight: 300;
+        }
+        
+        .tx-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .tx-status.success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+        
+        .tx-status.pending {
+            background: rgba(234, 179, 8, 0.1);
+            color: #eab308;
+            border: 1px solid rgba(234, 179, 8, 0.2);
+        }
+        
+        .tx-status.failed {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        
+        /* NFT Grid */
+        .nft-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .nft-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .nft-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nft-image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%);
+        }
+        
+        .nft-info {
+            padding: 1rem;
+        }
+        
+        .nft-name {
+            font-weight: 300;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+            color: #ffffff;
+        }
+        
+        .nft-collection {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 300;
+        }
+        
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+            font-weight: 300;
+        }
+        
+        .spinner {
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+            font-weight: 300;
+        }
+        
+        .empty-state-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Error Message */
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            display: none;
+            font-size: 0.875rem;
+            font-weight: 300;
+        }
+        
+        .error-message.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.5);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 8rem 1.5rem 4rem 1.5rem;
+            }
+            
+            .nav {
+                padding: 1.5rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .wallet-address-section {
+                flex-direction: column;
+            }
+            
+            .manual-input {
+                flex-direction: column;
+            }
+            
+            .connect-options {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .nft-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">SUI<span class="te">TE</span></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="market.html">Market</a>
+            <a href="news.html">News</a>
+            <a href="analytics.html" class="active">Analytics</a>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Wallet Analytics</h1>
+            <p class="page-subtitle">Real-time portfolio tracking · Read-only · Completely safe</p>
+        </div>
+        
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage"></div>
+        
+        <!-- Wallet Connect Section -->
+        <div class="wallet-connect-section" id="connectSection">
+            <h2 class="connect-title">Connect Your Wallet</h2>
+            <p class="connect-subtitle">🔒 Read-only access · No signatures required · Zero risk</p>
+            
+            <div class="connect-options">
+                <button class="btn btn-primary" id="connectWalletBtn">
+                    Connect Sui Wallet
+                </button>
+            </div>
+            
+            <div class="manual-input-section">
+                <div class="divider">OR</div>
+                
+                <div class="manual-input">
+                    <input 
+                        type="text" 
+                        id="manualAddress" 
+                        placeholder="Enter Sui wallet address (0x...)"
+                        spellcheck="false"
+                    >
+                    <button class="btn btn-secondary" id="analyzeBtn">Analyze</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wallet Dashboard -->
+        <div class="wallet-dashboard" id="walletDashboard">
+            <!-- Wallet Header -->
+            <div class="wallet-header">
+                <div class="wallet-address-section">
+                    <div class="address-display">
+                        <div style="flex: 1;">
+                            <div class="address-label">Wallet Address</div>
+                            <div class="address-text" id="walletAddress"></div>
+                        </div>
+                        <button class="copy-btn" id="copyBtn">Copy</button>
+                    </div>
+                    <button class="btn btn-disconnect" id="disconnectBtn">Disconnect</button>
+                </div>
+                
+                <div class="wallet-stats">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Transactions</div>
+                        <div class="stat-value" id="totalTxCount">--</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Token Types</div>
+                        <div class="stat-value" id="tokenCount">--</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">NFTs Owned</div>
+                        <div class="stat-value" id="nftCount">--</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Portfolio Value -->
+            <div class="portfolio-card" id="portfolioCard">
+                <div class="portfolio-label">Total Portfolio Value</div>
+                <div class="portfolio-value" id="portfolioValue">$0.00</div>
+            </div>
+            
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Token Holdings -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Token Holdings</div>
+                    </div>
+                    <div id="tokenListContent">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading token balances...
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Transaction History -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Recent Transactions</div>
+                    </div>
+                    <div id="transactionListContent">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading transactions...
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- NFT Gallery -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">NFT Collection</div>
+                </div>
+                <div id="nftGridContent">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading NFTs...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Configuration
+        const SUI_RPC = 'https://fullnode.mainnet.sui.io:443';
+        let currentWallet = null;
+        let suiPrice = 0;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeEventListeners();
+            fetchSuiPrice();
+        });
+        
+        // Event Listeners
+        function initializeEventListeners() {
+            document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
+            document.getElementById('analyzeBtn').addEventListener('click', analyzeManualAddress);
+            document.getElementById('copyBtn').addEventListener('click', copyAddress);
+            document.getElementById('disconnectBtn').addEventListener('click', disconnect);
+            
+            // Allow Enter key in manual input
+            document.getElementById('manualAddress').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') analyzeManualAddress();
+            });
+        }
+        
+        // Fetch SUI Price
+        async function fetchSuiPrice() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=sui&vs_currencies=usd');
+                const data = await response.json();
+                suiPrice = data.sui?.usd || 0;
+            } catch (error) {
+                console.error('Error fetching SUI price:', error);
+                suiPrice = 0;
+            }
+        }
+        
+        // Connect Wallet (Sui Wallet Standard)
+        async function connectWallet() {
+            try {
+                showError('');
+                
+                if (!window.suiWallet) {
+                    showError('Please install a Sui wallet extension (e.g., Sui Wallet, Suiet, Ethos)');
+                    return;
+                }
+                
+                const accounts = await window.suiWallet.getAccounts();
+                
+                if (!accounts || accounts.length === 0) {
+                    showError('No accounts found. Please create a wallet first.');
+                    return;
+                }
+                
+                const address = accounts[0];
+                if (address) {
+                    currentWallet = address;
+                    loadWalletData(address);
+                }
+            } catch (error) {
+                console.error('Wallet connection error:', error);
+                showError('Failed to connect wallet. Please try manual address input instead.');
+            }
+        }
+        
+        // Analyze Manual Address
+        function analyzeManualAddress() {
+            const address = document.getElementById('manualAddress').value.trim();
+            
+            if (!address) {
+                showError('Please enter a wallet address');
+                return;
+            }
+            
+            if (!address.startsWith('0x') || address.length < 60) {
+                showError('Invalid Sui address format. Address should start with 0x and be 66 characters long.');
+                return;
+            }
+            
+            showError('');
+            currentWallet = address;
+            loadWalletData(address);
+        }
+        
+        // Load Wallet Data
+        async function loadWalletData(address) {
+            document.getElementById('connectSection').style.display = 'none';
+            document.getElementById('walletDashboard').classList.add('active');
+            document.getElementById('walletAddress').textContent = formatAddress(address);
+            
+            // Load all data concurrently
+            await Promise.all([
+                loadTokenBalances(address),
+                loadTransactionHistory(address),
+                loadNFTs(address)
+            ]);
+        }
+        
+        // Load Token Balances
+        async function loadTokenBalances(address) {
+            try {
+                const response = await fetch(SUI_RPC, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        id: 1,
+                        method: 'suix_getAllBalances',
+                        params: [address]
+                    })
+                });
+                
+                const data = await response.json();
+                const balances = data.result || [];
+                
+                if (balances.length === 0) {
+                    document.getElementById('tokenListContent').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">💰</div>
+                            <p>No tokens found in this wallet</p>
+                        </div>
+                    `;
+                    document.getElementById('tokenCount').textContent = '0';
+                    return;
+                }
+                
+                let totalValue = 0;
+                let tokenHtml = '<div class="token-list">';
+                
+                for (const balance of balances) {
+                    const coinType = balance.coinType;
+                    const totalBalance = parseInt(balance.totalBalance);
+                    
+                    // Get token metadata
+                    const metadata = await getTokenMetadata(coinType);
+                    const decimals = metadata.decimals || 9;
+                    const symbol = metadata.symbol || 'Unknown';
+                    const name = metadata.name || 'Unknown Token';
+                    
+                    const formattedBalance = (totalBalance / Math.pow(10, decimals)).toFixed(4);
+                    
+                    // Calculate USD value (only for SUI)
+                    let usdValue = 0;
+                    if (coinType.includes('sui::SUI') && suiPrice > 0) {
+                        usdValue = formattedBalance * suiPrice;
+                        totalValue += usdValue;
+                    }
+                    
+                    tokenHtml += `
+                        <div class="token-item">
+                            <div class="token-info">
+                                <div class="token-icon">${symbol.substring(0, 2)}</div>
+                                <div class="token-details">
+                                    <div class="token-symbol">${symbol}</div>
+                                    <div class="token-name">${name}</div>
+                                </div>
+                            </div>
+                            <div class="token-amount">
+                                <div class="token-balance">${formattedBalance}</div>
+                                ${usdValue > 0 ? `<div class="token-value">$${usdValue.toFixed(2)}</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                tokenHtml += '</div>';
+                document.getElementById('tokenListContent').innerHTML = tokenHtml;
+                document.getElementById('tokenCount').textContent = balances.length;
+                document.getElementById('portfolioValue').textContent = `$${totalValue.toFixed(2)}`;
+                
+            } catch (error) {
+                console.error('Error loading token balances:', error);
+                document.getElementById('tokenListContent').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <p>Error loading token balances</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Get Token Metadata
+        async function getTokenMetadata(coinType) {
+            try {
+                const response = await fetch(SUI_RPC, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        id: 1,
+                        method: 'suix_getCoinMetadata',
+                        params: [coinType]
+                    })
+                });
+                
+                const data = await response.json();
+                return data.result || { decimals: 9, symbol: 'Unknown', name: 'Unknown Token' };
+            } catch (error) {
+                console.error('Error fetching token metadata:', error);
+                return { decimals: 9, symbol: 'Unknown', name: 'Unknown Token' };
+            }
+        }
+        
+        // Load Transaction History
+        async function loadTransactionHistory(address) {
+            try {
+                const response = await fetch(SUI_RPC, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        id: 1,
+                        method: 'suix_queryTransactionBlocks',
+                        params: [{
+                            filter: {
+                                FromAddress: address
+                            },
+                            options: {
+                                showInput: true,
+                                showEffects: true,
+                                showEvents: true
+                            }
+                        },
+                        null,
+                        20,
+                        false]
+                    })
+                });
+                
+                const data = await response.json();
+                const transactions = data.result?.data || [];
+                
+                if (transactions.length === 0) {
+                    document.getElementById('transactionListContent').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📋</div>
+                            <p>No transactions found</p>
+                        </div>
+                    `;
+                    document.getElementById('totalTxCount').textContent = '0';
+                    return;
+                }
+                
+                let txHtml = '<div class="transaction-list">';
+                
+                for (const tx of transactions) {
+                    const digest = tx.digest;
+                    const timestamp = tx.timestampMs ? new Date(parseInt(tx.timestampMs)).toLocaleString() : 'Unknown';
+                    const status = tx.effects?.status?.status === 'success' ? 'success' : 'failed';
+                    
+                    // Determine transaction type
+                    let txType = 'contract';
+                    let typeLabel = 'Contract';
+                    
+                    if (tx.transaction?.data?.transaction?.kind === 'ProgrammableTransaction') {
+                        typeLabel = 'Program';
+                    }
+                    
+                    txHtml += `
+                        <div class="transaction-item">
+                            <div class="tx-left">
+                                <span class="tx-type ${txType}">${typeLabel}</span>
+                                <div class="tx-details">
+                                    <div class="tx-hash">${formatAddress(digest, 16)}</div>
+                                    <div class="tx-time">${timestamp}</div>
+                                </div>
+                            </div>
+                            <span class="tx-status ${status}">${status}</span>
+                        </div>
+                    `;
+                }
+                
+                txHtml += '</div>';
+                document.getElementById('transactionListContent').innerHTML = txHtml;
+                document.getElementById('totalTxCount').textContent = transactions.length + '+';
+                
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                document.getElementById('transactionListContent').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <p>Error loading transactions</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load NFTs
+        async function loadNFTs(address) {
+            try {
+                const response = await fetch(SUI_RPC, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        id: 1,
+                        method: 'suix_getOwnedObjects',
+                        params: [
+                            address,
+                            {
+                                filter: {
+                                    MatchAll: [
+                                        { StructType: "0x2::display::Display" }
+                                    ]
+                                },
+                                options: {
+                                    showType: true,
+                                    showContent: true,
+                                    showDisplay: true
+                                }
+                            },
+                            null,
+                            50
+                        ]
+                    })
+                });
+                
+                const data = await response.json();
+                const objects = data.result?.data || [];
+                
+                // Filter for NFT-like objects
+                const nfts = objects.filter(obj => {
+                    const type = obj.data?.type || '';
+                    return type.includes('::') && !type.includes('coin::Coin');
+                });
+                
+                if (nfts.length === 0) {
+                    document.getElementById('nftGridContent').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🖼️</div>
+                            <p>No NFTs found in this wallet</p>
+                        </div>
+                    `;
+                    document.getElementById('nftCount').textContent = '0';
+                    return;
+                }
+                
+                let nftHtml = '<div class="nft-grid">';
+                
+                for (const nft of nfts.slice(0, 24)) {
+                    const display = nft.data?.display?.data || {};
+                    const name = display.name || 'Unknown NFT';
+                    const imageUrl = display.image_url || display.img_url || '';
+                    const collection = display.collection || 'Sui NFT';
+                    
+                    nftHtml += `
+                        <div class="nft-card">
+                            <div class="nft-image" style="${imageUrl ? `background-image: url('${imageUrl}'); background-size: cover; background-position: center;` : ''}"></div>
+                            <div class="nft-info">
+                                <div class="nft-name">${name}</div>
+                                <div class="nft-collection">${collection}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                nftHtml += '</div>';
+                document.getElementById('nftGridContent').innerHTML = nftHtml;
+                document.getElementById('nftCount').textContent = nfts.length;
+                
+            } catch (error) {
+                console.error('Error loading NFTs:', error);
+                document.getElementById('nftGridContent').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <p>Error loading NFTs</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Copy Address
+        function copyAddress() {
+            if (!currentWallet) return;
+            
+            navigator.clipboard.writeText(currentWallet).then(() => {
+                const btn = document.getElementById('copyBtn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+        
+        // Disconnect
+        function disconnect() {
+            currentWallet = null;
+            document.getElementById('walletDashboard').classList.remove('active');
+            document.getElementById('connectSection').style.display = 'block';
+            document.getElementById('manualAddress').value = '';
+            showError('');
+        }
+        
+        // Show Error
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            if (message) {
+                errorEl.textContent = message;
+                errorEl.classList.add('show');
+            } else {
+                errorEl.classList.remove('show');
+            }
+        }
+        
+        // Format Address
+        function formatAddress(address, length = 10) {
+            if (!address) return '';
+            if (address.length <= length * 2) return address;
+            return `${address.substring(0, length)}...${address.substring(address.length - length)}`;
+        }
+    </script>
+</body>
+</html>
