@@ -381,12 +381,18 @@
                     };
                 });
                 
+                // Initial sort by market cap
+                sortByMarketCap();
                 renderTable();
             } catch (error) {
                 console.error('Error fetching market data:', error);
                 document.getElementById('table-container').innerHTML = 
                     '<div class="error">Unable to load market data. Please try again later.</div>';
             }
+        }
+        
+        function sortByMarketCap() {
+            marketData.sort((a, b) => b.marketCap - a.marketCap);
         }
         
         function formatNumber(num) {
@@ -460,6 +466,16 @@
                 let aVal = a[column];
                 let bVal = b[column];
                 
+                // Handle string sorting (for category and name)
+                if (column === 'category' || column === 'name') {
+                    if (sortDirection === 'asc') {
+                        return aVal.localeCompare(bVal);
+                    } else {
+                        return bVal.localeCompare(aVal);
+                    }
+                }
+                
+                // Handle numeric sorting (for price, marketCap, etc.)
                 if (sortDirection === 'asc') {
                     return aVal - bVal;
                 } else {
