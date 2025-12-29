@@ -17,7 +17,7 @@
             min-height: 100vh;
         }
         
-        /* Navigation - Exact match to existing site */
+        /* Navigation */
         .nav {
             position: fixed;
             top: 0;
@@ -333,7 +333,7 @@
         /* Dashboard Grid */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-columns: 1fr;
             gap: 2rem;
             margin-bottom: 2rem;
         }
@@ -369,7 +369,7 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            max-height: 500px;
+            max-height: 600px;
             overflow-y: auto;
         }
         
@@ -407,6 +407,13 @@
             color: #3b82f6;
             font-size: 0.75rem;
             flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .token-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .token-details {
@@ -442,109 +449,10 @@
             font-weight: 300;
         }
         
-        /* Transaction List */
-        .transaction-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        
-        .transaction-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
-            transition: all 0.3s;
-        }
-        
-        .transaction-item:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(59, 130, 246, 0.2);
-        }
-        
-        .tx-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex: 1;
-        }
-        
-        .tx-type {
-            padding: 0.25rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 300;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        .tx-type.send {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-        
-        .tx-type.receive {
-            background: rgba(34, 197, 94, 0.1);
-            color: #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.2);
-        }
-        
-        .tx-type.contract {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-        }
-        
-        .tx-details {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-        
-        .tx-hash {
-            font-family: 'Courier New', monospace;
-            font-size: 0.75rem;
-            color: #ffffff;
-            font-weight: 300;
-        }
-        
-        .tx-time {
+        .token-price {
             font-size: 0.7rem;
             color: #6b7280;
             font-weight: 300;
-        }
-        
-        .tx-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 300;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        .tx-status.success {
-            background: rgba(34, 197, 94, 0.1);
-            color: #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.2);
-        }
-        
-        .tx-status.pending {
-            background: rgba(234, 179, 8, 0.1);
-            color: #eab308;
-            border: 1px solid rgba(234, 179, 8, 0.2);
-        }
-        
-        .tx-status.failed {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
         }
         
         /* NFT Grid */
@@ -672,12 +580,6 @@
         }
         
         /* Mobile Responsive */
-        @media (max-width: 1024px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
         @media (max-width: 768px) {
             .container {
                 padding: 8rem 1.5rem 4rem 1.5rem;
@@ -730,8 +632,8 @@
     <!-- Main Content -->
     <div class="container">
         <div class="page-header">
-            <h1 class="page-title">Wallet Analytics</h1>
-            <p class="page-subtitle">Real-time portfolio tracking · Read-only · Completely safe</p>
+            <h1 class="page-title">Portfolio Analytics</h1>
+            <p class="page-subtitle">Track your SUI ecosystem holdings · Read-only · Completely safe</p>
         </div>
         
         <!-- Error Message -->
@@ -780,10 +682,6 @@
                 
                 <div class="wallet-stats">
                     <div class="stat-card">
-                        <div class="stat-label">Total Transactions</div>
-                        <div class="stat-value" id="totalTxCount">--</div>
-                    </div>
-                    <div class="stat-card">
                         <div class="stat-label">Token Types</div>
                         <div class="stat-value" id="tokenCount">--</div>
                     </div>
@@ -814,19 +712,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Transaction History -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Recent Transactions</div>
-                    </div>
-                    <div id="transactionListContent">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            Loading transactions...
-                        </div>
-                    </div>
-                </div>
             </div>
             
             <!-- NFT Gallery -->
@@ -848,12 +733,38 @@
         // Configuration
         const SUI_RPC = 'https://fullnode.mainnet.sui.io:443';
         let currentWallet = null;
-        let suiPrice = 0;
+        
+        // Token list matching market.html - EXACT SAME LIST
+        const TRACKED_TOKENS = [
+            { symbol: 'DEEP', name: 'DeepBook' },
+            { symbol: 'CETUS', name: 'Cetus' },
+            { symbol: 'MMT', name: 'Momentum' },
+            { symbol: 'BLUE', name: 'Bluefin' },
+            { symbol: 'SCA', name: 'Scallop' },
+            { symbol: 'NAVX', name: 'Navi' },
+            { symbol: 'SEND', name: 'Suilend' },
+            { symbol: 'ALPHA', name: 'AlphaFi' },
+            { symbol: 'HAEDAL', name: 'Haedal' },
+            { symbol: 'BUT', name: 'Bucket' },
+            { symbol: 'XMN', name: 'xMoney' },
+            { symbol: 'WAL', name: 'Walrus' },
+            { symbol: 'IKA', name: 'Ika' },
+            { symbol: 'NS', name: 'SuiNS' },
+            { symbol: 'DMC', name: 'Delorean' },
+            { symbol: 'FAITH', name: 'Faith' },
+            { symbol: 'TAKE', name: 'Overtake' },
+            { symbol: 'ALKIMI', name: 'Alkimi' },
+            { symbol: 'UP', name: 'DoubleUp' },
+            { symbol: 'LOFI', name: 'Lofi' },
+            { symbol: 'MANIFEST', name: 'Manifest' }
+        ];
+        
+        let tokenPrices = {};
         
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initializeEventListeners();
-            fetchSuiPrice();
+            fetchTokenPrices();
         });
         
         // Event Listeners
@@ -863,86 +774,116 @@
             document.getElementById('copyBtn').addEventListener('click', copyAddress);
             document.getElementById('disconnectBtn').addEventListener('click', disconnect);
             
-            // Allow Enter key in manual input
             document.getElementById('manualAddress').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') analyzeManualAddress();
             });
         }
         
-        // Fetch SUI Price
-        async function fetchSuiPrice() {
+        // Fetch token prices from DexScreener
+        async function fetchTokenPrices() {
+            console.log('Fetching token prices from DexScreener...');
+            
+            for (const token of TRACKED_TOKENS) {
+                try {
+                    const searchTerms = [`${token.symbol} sui`, token.symbol];
+                    let bestPair = null;
+                    
+                    for (const searchTerm of searchTerms) {
+                        const response = await fetch(
+                            `https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(searchTerm)}`
+                        );
+                        
+                        if (!response.ok) continue;
+                        const data = await response.json();
+                        
+                        const suiPairs = data.pairs?.filter(p => {
+                            if (p.chainId !== 'sui') return false;
+                            const baseMatch = p.baseToken?.symbol?.toUpperCase() === token.symbol.toUpperCase();
+                            const quoteMatch = p.quoteToken?.symbol?.toUpperCase() === token.symbol.toUpperCase();
+                            return baseMatch || quoteMatch;
+                        });
+                        
+                        if (suiPairs && suiPairs.length > 0) {
+                            bestPair = suiPairs.sort((a, b) => 
+                                (parseFloat(b.liquidity?.usd) || 0) - (parseFloat(a.liquidity?.usd) || 0)
+                            )[0];
+                            
+                            const isBase = bestPair.baseToken?.symbol?.toUpperCase() === token.symbol.toUpperCase();
+                            const tokenData = isBase ? bestPair.baseToken : bestPair.quoteToken;
+                            
+                            tokenPrices[token.symbol] = {
+                                price: parseFloat(bestPair.priceUsd) || 0,
+                                logo: tokenData?.image || bestPair.info?.imageUrl || null
+                            };
+                            console.log(`✓ ${token.symbol}: $${tokenPrices[token.symbol].price}`);
+                            break;
+                        }
+                    }
+                    
+                    if (!bestPair) {
+                        tokenPrices[token.symbol] = { price: 0, logo: null };
+                    }
+                    
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                } catch (error) {
+                    console.error(`✗ ${token.symbol}: ${error.message}`);
+                    tokenPrices[token.symbol] = { price: 0, logo: null };
+                }
+            }
+            
+            // Fetch SUI price separately
             try {
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=sui&vs_currencies=usd');
-                const data = await response.json();
-                suiPrice = data.sui?.usd || 0;
+                const suiResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=sui&vs_currencies=usd');
+                const suiData = await suiResponse.json();
+                tokenPrices['SUI'] = { price: suiData.sui?.usd || 0, logo: null };
+                console.log(`✓ SUI: $${tokenPrices['SUI'].price}`);
             } catch (error) {
                 console.error('Error fetching SUI price:', error);
-                suiPrice = 0;
+                tokenPrices['SUI'] = { price: 0, logo: null };
             }
         }
         
-        // Connect Wallet (Sui Wallet Standard)
         async function connectWallet() {
             try {
                 showError('');
-                
                 if (!window.suiWallet) {
-                    showError('Please install a Sui wallet extension (e.g., Sui Wallet, Suiet, Ethos)');
+                    showError('Please install a Sui wallet extension');
                     return;
                 }
-                
                 const accounts = await window.suiWallet.getAccounts();
-                
                 if (!accounts || accounts.length === 0) {
-                    showError('No accounts found. Please create a wallet first.');
+                    showError('No accounts found');
                     return;
                 }
-                
-                const address = accounts[0];
-                if (address) {
-                    currentWallet = address;
-                    loadWalletData(address);
-                }
+                currentWallet = accounts[0];
+                loadWalletData(currentWallet);
             } catch (error) {
-                console.error('Wallet connection error:', error);
-                showError('Failed to connect wallet. Please try manual address input instead.');
+                showError('Failed to connect wallet. Try manual input.');
             }
         }
         
-        // Analyze Manual Address
         function analyzeManualAddress() {
             const address = document.getElementById('manualAddress').value.trim();
-            
             if (!address) {
                 showError('Please enter a wallet address');
                 return;
             }
-            
             if (!address.startsWith('0x') || address.length < 60) {
-                showError('Invalid Sui address format. Address should start with 0x and be 66 characters long.');
+                showError('Invalid Sui address format');
                 return;
             }
-            
             showError('');
             currentWallet = address;
             loadWalletData(address);
         }
         
-        // Load Wallet Data
         async function loadWalletData(address) {
             document.getElementById('connectSection').style.display = 'none';
             document.getElementById('walletDashboard').classList.add('active');
             document.getElementById('walletAddress').textContent = formatAddress(address);
-            
-            // Load all data concurrently
-            await Promise.all([
-                loadTokenBalances(address),
-                loadTransactionHistory(address),
-                loadNFTs(address)
-            ]);
+            await Promise.all([loadTokenBalances(address), loadNFTs(address)]);
         }
         
-        // Load Token Balances
         async function loadTokenBalances(address) {
             try {
                 const response = await fetch(SUI_RPC, {
@@ -963,69 +904,113 @@
                     document.getElementById('tokenListContent').innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">💰</div>
-                            <p>No tokens found in this wallet</p>
+                            <p>No tokens found</p>
                         </div>
                     `;
                     document.getElementById('tokenCount').textContent = '0';
+                    document.getElementById('portfolioValue').textContent = '$0.00';
                     return;
                 }
                 
                 let totalValue = 0;
-                let tokenHtml = '<div class="token-list">';
+                let trackedTokensFound = [];
                 
                 for (const balance of balances) {
                     const coinType = balance.coinType;
                     const totalBalance = parseInt(balance.totalBalance);
-                    
-                    // Get token metadata
                     const metadata = await getTokenMetadata(coinType);
                     const decimals = metadata.decimals || 9;
                     const symbol = metadata.symbol || 'Unknown';
-                    const name = metadata.name || 'Unknown Token';
+                    const name = metadata.name || 'Unknown';
                     
-                    const formattedBalance = (totalBalance / Math.pow(10, decimals)).toFixed(4);
+                    const trackedToken = TRACKED_TOKENS.find(t => 
+                        t.symbol.toUpperCase() === symbol.toUpperCase()
+                    );
                     
-                    // Calculate USD value (only for SUI)
-                    let usdValue = 0;
-                    if (coinType.includes('sui::SUI') && suiPrice > 0) {
-                        usdValue = formattedBalance * suiPrice;
-                        totalValue += usdValue;
+                    if (!trackedToken && !coinType.includes('sui::SUI')) continue;
+                    
+                    const formattedBalance = totalBalance / Math.pow(10, decimals);
+                    let price = 0;
+                    let logo = null;
+                    
+                    if (coinType.includes('sui::SUI')) {
+                        price = tokenPrices['SUI']?.price || 0;
+                        logo = tokenPrices['SUI']?.logo;
+                        trackedTokensFound.push({
+                            symbol: 'SUI',
+                            name: 'Sui',
+                            balance: formattedBalance,
+                            price: price,
+                            usdValue: formattedBalance * price,
+                            logo: logo
+                        });
+                    } else if (trackedToken && tokenPrices[trackedToken.symbol]) {
+                        price = tokenPrices[trackedToken.symbol].price;
+                        logo = tokenPrices[trackedToken.symbol].logo;
+                        trackedTokensFound.push({
+                            symbol: trackedToken.symbol,
+                            name: trackedToken.name,
+                            balance: formattedBalance,
+                            price: price,
+                            usdValue: formattedBalance * price,
+                            logo: logo
+                        });
                     }
                     
+                    totalValue += formattedBalance * price;
+                }
+                
+                if (trackedTokensFound.length === 0) {
+                    document.getElementById('tokenListContent').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">💰</div>
+                            <p>No tracked ecosystem tokens found</p>
+                        </div>
+                    `;
+                    document.getElementById('tokenCount').textContent = '0';
+                    document.getElementById('portfolioValue').textContent = '$0.00';
+                    return;
+                }
+                
+                trackedTokensFound.sort((a, b) => b.usdValue - a.usdValue);
+                
+                let tokenHtml = '<div class="token-list">';
+                for (const token of trackedTokensFound) {
                     tokenHtml += `
                         <div class="token-item">
                             <div class="token-info">
-                                <div class="token-icon">${symbol.substring(0, 2)}</div>
+                                <div class="token-icon">
+                                    ${token.logo ? `<img src="${token.logo}" alt="${token.symbol}">` : token.symbol.substring(0, 2)}
+                                </div>
                                 <div class="token-details">
-                                    <div class="token-symbol">${symbol}</div>
-                                    <div class="token-name">${name}</div>
+                                    <div class="token-symbol">${token.symbol}</div>
+                                    <div class="token-name">${token.name}</div>
                                 </div>
                             </div>
                             <div class="token-amount">
-                                <div class="token-balance">${formattedBalance}</div>
-                                ${usdValue > 0 ? `<div class="token-value">$${usdValue.toFixed(2)}</div>` : ''}
+                                <div class="token-balance">${token.balance.toFixed(4)}</div>
+                                <div class="token-value">$${token.usdValue.toFixed(2)}</div>
+                                ${token.price > 0 ? `<div class="token-price">@ $${token.price < 1 ? token.price.toFixed(6) : token.price.toFixed(2)}</div>` : ''}
                             </div>
                         </div>
                     `;
                 }
-                
                 tokenHtml += '</div>';
-                document.getElementById('tokenListContent').innerHTML = tokenHtml;
-                document.getElementById('tokenCount').textContent = balances.length;
-                document.getElementById('portfolioValue').textContent = `$${totalValue.toFixed(2)}`;
                 
+                document.getElementById('tokenListContent').innerHTML = tokenHtml;
+                document.getElementById('tokenCount').textContent = trackedTokensFound.length;
+                document.getElementById('portfolioValue').textContent = `$${totalValue.toFixed(2)}`;
             } catch (error) {
-                console.error('Error loading token balances:', error);
+                console.error('Error loading tokens:', error);
                 document.getElementById('tokenListContent').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">⚠️</div>
-                        <p>Error loading token balances</p>
+                        <p>Error loading tokens</p>
                     </div>
                 `;
             }
         }
         
-        // Get Token Metadata
         async function getTokenMetadata(coinType) {
             try {
                 const response = await fetch(SUI_RPC, {
@@ -1038,100 +1023,13 @@
                         params: [coinType]
                     })
                 });
-                
                 const data = await response.json();
-                return data.result || { decimals: 9, symbol: 'Unknown', name: 'Unknown Token' };
+                return data.result || { decimals: 9, symbol: 'Unknown', name: 'Unknown' };
             } catch (error) {
-                console.error('Error fetching token metadata:', error);
-                return { decimals: 9, symbol: 'Unknown', name: 'Unknown Token' };
+                return { decimals: 9, symbol: 'Unknown', name: 'Unknown' };
             }
         }
         
-        // Load Transaction History
-        async function loadTransactionHistory(address) {
-            try {
-                const response = await fetch(SUI_RPC, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        jsonrpc: '2.0',
-                        id: 1,
-                        method: 'suix_queryTransactionBlocks',
-                        params: [{
-                            filter: {
-                                FromAddress: address
-                            },
-                            options: {
-                                showInput: true,
-                                showEffects: true,
-                                showEvents: true
-                            }
-                        },
-                        null,
-                        20,
-                        false]
-                    })
-                });
-                
-                const data = await response.json();
-                const transactions = data.result?.data || [];
-                
-                if (transactions.length === 0) {
-                    document.getElementById('transactionListContent').innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">📋</div>
-                            <p>No transactions found</p>
-                        </div>
-                    `;
-                    document.getElementById('totalTxCount').textContent = '0';
-                    return;
-                }
-                
-                let txHtml = '<div class="transaction-list">';
-                
-                for (const tx of transactions) {
-                    const digest = tx.digest;
-                    const timestamp = tx.timestampMs ? new Date(parseInt(tx.timestampMs)).toLocaleString() : 'Unknown';
-                    const status = tx.effects?.status?.status === 'success' ? 'success' : 'failed';
-                    
-                    // Determine transaction type
-                    let txType = 'contract';
-                    let typeLabel = 'Contract';
-                    
-                    if (tx.transaction?.data?.transaction?.kind === 'ProgrammableTransaction') {
-                        typeLabel = 'Program';
-                    }
-                    
-                    txHtml += `
-                        <div class="transaction-item">
-                            <div class="tx-left">
-                                <span class="tx-type ${txType}">${typeLabel}</span>
-                                <div class="tx-details">
-                                    <div class="tx-hash">${formatAddress(digest, 16)}</div>
-                                    <div class="tx-time">${timestamp}</div>
-                                </div>
-                            </div>
-                            <span class="tx-status ${status}">${status}</span>
-                        </div>
-                    `;
-                }
-                
-                txHtml += '</div>';
-                document.getElementById('transactionListContent').innerHTML = txHtml;
-                document.getElementById('totalTxCount').textContent = transactions.length + '+';
-                
-            } catch (error) {
-                console.error('Error loading transactions:', error);
-                document.getElementById('transactionListContent').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">⚠️</div>
-                        <p>Error loading transactions</p>
-                    </div>
-                `;
-            }
-        }
-        
-        // Load NFTs
         async function loadNFTs(address) {
             try {
                 const response = await fetch(SUI_RPC, {
@@ -1141,30 +1039,15 @@
                         jsonrpc: '2.0',
                         id: 1,
                         method: 'suix_getOwnedObjects',
-                        params: [
-                            address,
-                            {
-                                filter: {
-                                    MatchAll: [
-                                        { StructType: "0x2::display::Display" }
-                                    ]
-                                },
-                                options: {
-                                    showType: true,
-                                    showContent: true,
-                                    showDisplay: true
-                                }
-                            },
-                            null,
-                            50
-                        ]
+                        params: [address, {
+                            filter: { MatchAll: [{ StructType: "0x2::display::Display" }] },
+                            options: { showType: true, showContent: true, showDisplay: true }
+                        }, null, 50]
                     })
                 });
                 
                 const data = await response.json();
                 const objects = data.result?.data || [];
-                
-                // Filter for NFT-like objects
                 const nfts = objects.filter(obj => {
                     const type = obj.data?.type || '';
                     return type.includes('::') && !type.includes('coin::Coin');
@@ -1174,7 +1057,7 @@
                     document.getElementById('nftGridContent').innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">🖼️</div>
-                            <p>No NFTs found in this wallet</p>
+                            <p>No NFTs found</p>
                         </div>
                     `;
                     document.getElementById('nftCount').textContent = '0';
@@ -1182,7 +1065,6 @@
                 }
                 
                 let nftHtml = '<div class="nft-grid">';
-                
                 for (const nft of nfts.slice(0, 24)) {
                     const display = nft.data?.display?.data || {};
                     const name = display.name || 'Unknown NFT';
@@ -1191,7 +1073,7 @@
                     
                     nftHtml += `
                         <div class="nft-card">
-                            <div class="nft-image" style="${imageUrl ? `background-image: url('${imageUrl}'); background-size: cover; background-position: center;` : ''}"></div>
+                            <div class="nft-image" style="${imageUrl ? `background-image: url('${imageUrl}'); background-size: cover;` : ''}"></div>
                             <div class="nft-info">
                                 <div class="nft-name">${name}</div>
                                 <div class="nft-collection">${collection}</div>
@@ -1199,11 +1081,10 @@
                         </div>
                     `;
                 }
-                
                 nftHtml += '</div>';
+                
                 document.getElementById('nftGridContent').innerHTML = nftHtml;
                 document.getElementById('nftCount').textContent = nfts.length;
-                
             } catch (error) {
                 console.error('Error loading NFTs:', error);
                 document.getElementById('nftGridContent').innerHTML = `
@@ -1215,23 +1096,16 @@
             }
         }
         
-        // Copy Address
         function copyAddress() {
             if (!currentWallet) return;
-            
             navigator.clipboard.writeText(currentWallet).then(() => {
                 const btn = document.getElementById('copyBtn');
-                const originalText = btn.textContent;
+                const original = btn.textContent;
                 btn.textContent = 'Copied!';
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy:', err);
+                setTimeout(() => btn.textContent = original, 2000);
             });
         }
         
-        // Disconnect
         function disconnect() {
             currentWallet = null;
             document.getElementById('walletDashboard').classList.remove('active');
@@ -1240,7 +1114,6 @@
             showError('');
         }
         
-        // Show Error
         function showError(message) {
             const errorEl = document.getElementById('errorMessage');
             if (message) {
@@ -1251,7 +1124,6 @@
             }
         }
         
-        // Format Address
         function formatAddress(address, length = 10) {
             if (!address) return '';
             if (address.length <= length * 2) return address;
