@@ -81,7 +81,7 @@
         }
         .metrics {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 2rem;
             margin-bottom: 4rem;
         }
@@ -101,13 +101,13 @@
             margin-bottom: 1rem;
         }
         .metric-value {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 300;
             color: #ffffff;
             margin-bottom: 0.5rem;
         }
         .metric-change {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 300;
         }
         .metric-change.positive { color: #10b981; }
@@ -202,9 +202,9 @@
             height: 500px !important;
         }
         
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
             .metrics {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
             }
         }
         
@@ -220,7 +220,7 @@
                 gap: 1.5rem;
             }
             .metric-value {
-                font-size: 1.75rem;
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -256,6 +256,11 @@
                     <div class="metric-label">FDV</div>
                     <div class="metric-value" id="fdv">--</div>
                     <div class="metric-change" id="fdv-change">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">TVL</div>
+                    <div class="metric-value" id="tvl">--</div>
+                    <div class="metric-change" id="tvl-change">--</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">24H Volume</div>
@@ -299,7 +304,7 @@
         
         async function fetchData() {
             try {
-                // Fetch comprehensive data
+                // Fetch CoinGecko data
                 const response = await fetch('https://api.coingecko.com/api/v3/coins/sui?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false');
                 const data = await response.json();
                 
@@ -326,8 +331,7 @@
                     const fdv = data.market_data.fully_diluted_valuation.usd;
                     document.getElementById('fdv').textContent = `$${formatLargeNumber(fdv)}`;
                     
-                    // Calculate FDV change (approximate based on price change)
-                    const fdvChange = priceChange; // FDV changes proportionally with price
+                    const fdvChange = priceChange;
                     const fdvChangeEl = document.getElementById('fdv-change');
                     fdvChangeEl.textContent = `${fdvChange >= 0 ? '+' : ''}${fdvChange.toFixed(2)}%`;
                     fdvChangeEl.className = fdvChange >= 0 ? 'metric-change positive' : 'metric-change negative';
@@ -336,6 +340,22 @@
                     const volume = data.market_data.total_volume.usd;
                     document.getElementById('volume').textContent = `$${formatLargeNumber(volume)}`;
                     document.getElementById('volume-change').textContent = '';
+                }
+                
+                // Fetch TVL from DefiLlama
+                const tvlResponse = await fetch('https://api.llama.fi/v2/chains');
+                const tvlData = await tvlResponse.json();
+                const suiChain = tvlData.find(chain => chain.name === 'Sui');
+                
+                if (suiChain) {
+                    const tvl = suiChain.tvl;
+                    document.getElementById('tvl').textContent = `$${formatLargeNumber(tvl)}`;
+                    
+                    // Calculate TVL change
+                    const tvlChange = ((tvl - suiChain.tvlPrevDay) / suiChain.tvlPrevDay) * 100;
+                    const tvlChangeEl = document.getElementById('tvl-change');
+                    tvlChangeEl.textContent = `${tvlChange >= 0 ? '+' : ''}${tvlChange.toFixed(2)}%`;
+                    tvlChangeEl.className = tvlChange >= 0 ? 'metric-change positive' : 'metric-change negative';
                 }
                 
                 await new Promise(resolve => setTimeout(resolve, 1000));
