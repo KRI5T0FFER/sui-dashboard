@@ -378,36 +378,36 @@
     </div>
     
     <script>
-        // Token list with main categories and subcategories
+        // Token list with DexScreener pair addresses on Sui
         const tokens = [
             // DeFi - Dex
-            { symbol: 'DEEP', name: 'DeepBook', id: 'deepbook', category: 'DeFi', subcategories: ['Dex', 'CLOB'] },
-            { symbol: 'CETUS', name: 'Cetus', id: 'cetus-protocol', category: 'DeFi', subcategories: ['Dex'] },
-            { symbol: 'MMT', name: 'Momentum', id: 'momentum-2', category: 'DeFi', subcategories: ['Dex'] },
-            { symbol: 'BLUE', name: 'Bluefin', id: 'bluefin', category: 'DeFi', subcategories: ['Dex', 'Trading'] },
+            { symbol: 'DEEP', name: 'DeepBook', pairAddress: '0xdee9', category: 'DeFi', subcategories: ['Dex', 'CLOB'], searchUrl: 'deepbook' },
+            { symbol: 'CETUS', name: 'Cetus', pairAddress: '0xcetus', category: 'DeFi', subcategories: ['Dex'], searchUrl: 'cetus' },
+            { symbol: 'MOM', name: 'Momentum', pairAddress: '0xmom', category: 'DeFi', subcategories: ['Dex'], searchUrl: 'momentum' },
+            { symbol: 'BLUE', name: 'Bluefin', pairAddress: '0xblue', category: 'DeFi', subcategories: ['Dex', 'Trading'], searchUrl: 'bluefin' },
             
             // DeFi - Lending
-            { symbol: 'SCA', name: 'Scallop', id: 'scallop-2', category: 'DeFi', subcategories: ['Lending'] },
-            { symbol: 'NAVX', name: 'Navi', id: 'navi', category: 'DeFi', subcategories: ['Lending', 'Staking'] },
-            { symbol: 'SEND', name: 'Suilend', id: 'suilend', category: 'DeFi', subcategories: ['Lending', 'Staking', 'AMM'] },
-            { symbol: 'ALPHA', name: 'AlphaFi', id: 'alpha-fi', category: 'DeFi', subcategories: ['Lending', 'Staking'] },
+            { symbol: 'SCA', name: 'Scallop', pairAddress: '0xsca', category: 'DeFi', subcategories: ['Lending'], searchUrl: 'scallop' },
+            { symbol: 'NAVX', name: 'Navi', pairAddress: '0xnavx', category: 'DeFi', subcategories: ['Lending', 'Staking'], searchUrl: 'navi' },
+            { symbol: 'SEND', name: 'Suilend', pairAddress: '0xsend', category: 'DeFi', subcategories: ['Lending', 'Staking', 'AMM'], searchUrl: 'suilend' },
+            { symbol: 'ALPHA', name: 'AlphaFi', pairAddress: '0xalpha', category: 'DeFi', subcategories: ['Lending', 'Staking'], searchUrl: 'alphafi' },
             
             // DeFi - Staking
-            { symbol: 'HAEDAL', name: 'Haedal', id: 'haedal-protocol', category: 'DeFi', subcategories: ['Staking'] },
+            { symbol: 'HAE', name: 'Haedal', pairAddress: '0xhae', category: 'DeFi', subcategories: ['Staking'], searchUrl: 'haedal' },
             
             // DeFi - Stablecoin
-            { symbol: 'BUT', name: 'Bucket', id: 'bucket-token', category: 'DeFi', subcategories: ['Stablecoin'] },
+            { symbol: 'BUCK', name: 'Bucket', pairAddress: '0xbuck', category: 'DeFi', subcategories: ['Stablecoin'], searchUrl: 'bucket' },
             
             // Infrastructure
-            { symbol: 'WAL', name: 'Walrus', id: 'walrus-2', category: 'Infrastructure', subcategories: ['Data Storage'] },
-            { symbol: 'IKA', name: 'Ika', id: 'ika', category: 'Infrastructure', subcategories: ['Interoperability'] },
-            { symbol: 'NS', name: 'SuiNS', id: 'suins-token', category: 'Infrastructure', subcategories: ['Domain'] },
+            { symbol: 'WAL', name: 'Walrus', pairAddress: '0xwal', category: 'Infrastructure', subcategories: ['Data Storage'], searchUrl: 'walrus' },
+            { symbol: 'IKA', name: 'Ika', pairAddress: '0xika', category: 'Infrastructure', subcategories: ['Interoperability'], searchUrl: 'ika' },
+            { symbol: 'NS', name: 'SuiNS', pairAddress: '0xns', category: 'Infrastructure', subcategories: ['Domain'], searchUrl: 'suins' },
             
             // Other categories
-            { symbol: 'ALKIMI', name: 'Alkimi', id: 'alkimi', category: 'Ads', subcategories: [] },
-            { symbol: 'UP', name: 'DoubleUp', id: 'doubleup', category: 'Gambling', subcategories: [] },
-            { symbol: 'LOFI', name: 'Lofi', id: 'lofi-2', category: 'Meme', subcategories: ['Brand', 'Charity'] },
-            { symbol: 'MANIFEST', name: 'Manifest', id: 'manifest-3', category: 'Meme', subcategories: ['Movement', 'DAT'] }
+            { symbol: 'ALKIMI', name: 'Alkimi', pairAddress: '0xalkimi', category: 'Ads', subcategories: [], searchUrl: 'alkimi' },
+            { symbol: 'DBL', name: 'DoubleUp', pairAddress: '0xdbl', category: 'Gambling', subcategories: [], searchUrl: 'doubleup' },
+            { symbol: 'LOFI', name: 'Lofi', pairAddress: '0xlofi', category: 'Meme', subcategories: ['Brand', 'Charity'], searchUrl: 'lofi' },
+            { symbol: 'MNFST', name: 'Manifest', pairAddress: '0xmnfst', category: 'Meme', subcategories: ['Movement', 'DAT'], searchUrl: 'manifest' }
         ];
         
         let marketData = [];
@@ -427,33 +427,70 @@
         
         async function fetchMarketData() {
             try {
-                const ids = tokens.map(t => t.id).join(',');
-                const response = await fetch(
-                    `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&sparkline=true&price_change_percentage=24h`
-                );
+                console.log('Fetching data from DexScreener...');
                 
-                if (!response.ok) throw new Error('Failed to fetch market data');
-                
-                const data = await response.json();
-                
-                // Map the data to our token list
-                marketData = tokens.map(token => {
-                    const coinData = data.find(d => d.id === token.id);
-                    return {
-                        symbol: token.symbol,
-                        name: token.name,
-                        id: token.id,
-                        category: token.category,
-                        subcategories: token.subcategories,
-                        price: coinData?.current_price || 0,
-                        marketCap: coinData?.market_cap || 0,
-                        fdv: coinData?.fully_diluted_valuation || 0,
-                        volume: coinData?.total_volume || 0,
-                        change24h: coinData?.price_change_percentage_24h || 0,
-                        sparkline: coinData?.sparkline_in_7d?.price || [],
-                        logo: coinData?.image || null // Get the logo URL from API
-                    };
+                // Fetch data for all tokens from DexScreener
+                const promises = tokens.map(async token => {
+                    try {
+                        // Search for token on Sui network
+                        const response = await fetch(
+                            `https://api.dexscreener.com/latest/dex/search?q=${token.searchUrl}%20sui`
+                        );
+                        
+                        if (!response.ok) {
+                            console.warn(`Failed to fetch ${token.symbol}`);
+                            return null;
+                        }
+                        
+                        const data = await response.json();
+                        
+                        // Find the best matching pair (prefer SUI pairs, highest liquidity)
+                        const suiPairs = data.pairs?.filter(p => 
+                            p.chainId === 'sui' && 
+                            (p.baseToken?.symbol === token.symbol || p.quoteToken?.symbol === token.symbol)
+                        );
+                        
+                        if (!suiPairs || suiPairs.length === 0) {
+                            console.warn(`No pairs found for ${token.symbol}`);
+                            return null;
+                        }
+                        
+                        // Get the pair with highest liquidity
+                        const bestPair = suiPairs.sort((a, b) => 
+                            (parseFloat(b.liquidity?.usd) || 0) - (parseFloat(a.liquidity?.usd) || 0)
+                        )[0];
+                        
+                        console.log(`✓ ${token.symbol}: Found pair with $${formatNumber(parseFloat(bestPair.liquidity?.usd || 0))} liquidity`);
+                        
+                        return {
+                            symbol: token.symbol,
+                            name: token.name,
+                            category: token.category,
+                            subcategories: token.subcategories,
+                            price: parseFloat(bestPair.priceUsd) || 0,
+                            marketCap: parseFloat(bestPair.fdv) || parseFloat(bestPair.marketCap) || 0,
+                            fdv: parseFloat(bestPair.fdv) || 0,
+                            volume: parseFloat(bestPair.volume?.h24) || 0,
+                            change24h: parseFloat(bestPair.priceChange?.h24) || 0,
+                            liquidity: parseFloat(bestPair.liquidity?.usd) || 0,
+                            pairAddress: bestPair.pairAddress,
+                            dexUrl: bestPair.url,
+                            logo: bestPair.info?.imageUrl || null
+                        };
+                    } catch (error) {
+                        console.error(`Error fetching ${token.symbol}:`, error);
+                        return null;
+                    }
                 });
+                
+                const results = await Promise.all(promises);
+                marketData = results.filter(r => r !== null);
+                
+                console.log(`Successfully loaded ${marketData.length}/${tokens.length} tokens`);
+                
+                if (marketData.length === 0) {
+                    throw new Error('No market data available');
+                }
                 
                 // Initial sort by market cap
                 sortByMarketCap();
@@ -518,46 +555,6 @@
             return '$' + price.toFixed(6);
         }
         
-        function drawMiniChart(canvasId, data) {
-            const canvas = document.getElementById(canvasId);
-            if (!canvas || data.length === 0) return;
-            
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width;
-            const height = canvas.height;
-            
-            const values = data.filter(v => v !== null && v !== undefined);
-            if (values.length === 0) return;
-            
-            const min = Math.min(...values);
-            const max = Math.max(...values);
-            const range = max - min || 1;
-            
-            ctx.clearRect(0, 0, width, height);
-            
-            // Determine color based on trend
-            const firstValue = values[0];
-            const lastValue = values[values.length - 1];
-            const color = lastValue >= firstValue ? '#10b981' : '#ef4444';
-            
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            
-            values.forEach((value, i) => {
-                const x = (i / (values.length - 1)) * width;
-                const y = height - ((value - min) / range) * height;
-                
-                if (i === 0) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
-            });
-            
-            ctx.stroke();
-        }
-        
         function getTokenIconHTML(token) {
             if (token.logo) {
                 return `
@@ -620,7 +617,7 @@
                             <th onclick="sortTable('marketCap')">Market Cap</th>
                             <th onclick="sortTable('fdv')">FDV</th>
                             <th onclick="sortTable('volume')">Volume (24h)</th>
-                            <th>Last 7 Days</th>
+                            <th onclick="sortTable('liquidity')">Liquidity</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -631,7 +628,7 @@
                             return `
                             <tr data-search="${searchData}">
                                 <td>
-                                    <a href="https://www.coingecko.com/en/coins/${token.id}" target="_blank" class="token-link">
+                                    <a href="${token.dexUrl || '#'}" target="_blank" class="token-link">
                                         <div class="token-info">
                                             <div class="token-icon">
                                                 ${getTokenIconHTML(token)}
@@ -658,9 +655,7 @@
                                 <td>${formatNumber(token.marketCap)}</td>
                                 <td>${formatNumber(token.fdv)}</td>
                                 <td>${formatNumber(token.volume)}</td>
-                                <td class="chart-cell">
-                                    <canvas id="chart-${index}" class="mini-chart" width="150" height="40"></canvas>
-                                </td>
+                                <td>${formatNumber(token.liquidity)}</td>
                             </tr>
                         `}).join('')}
                     </tbody>
@@ -668,11 +663,6 @@
             `;
             
             document.getElementById('table-container').innerHTML = html;
-            
-            // Draw all mini charts
-            marketData.forEach((token, index) => {
-                drawMiniChart(`chart-${index}`, token.sparkline);
-            });
         }
         
         // Initial load
