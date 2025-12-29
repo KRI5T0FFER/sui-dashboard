@@ -81,8 +81,8 @@
         }
         .metrics {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 3rem;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
             margin-bottom: 4rem;
         }
         .metric-card {
@@ -101,13 +101,13 @@
             margin-bottom: 1rem;
         }
         .metric-value {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 300;
             color: #ffffff;
             margin-bottom: 0.5rem;
         }
         .metric-change {
-            font-size: 1.125rem;
+            font-size: 1rem;
             font-weight: 300;
         }
         .metric-change.positive { color: #10b981; }
@@ -202,6 +202,12 @@
             height: 500px !important;
         }
         
+        @media (max-width: 1024px) {
+            .metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
         @media (max-width: 768px) {
             .metrics {
                 grid-template-columns: 1fr;
@@ -212,6 +218,9 @@
             }
             .nav-links {
                 gap: 1.5rem;
+            }
+            .metric-value {
+                font-size: 1.75rem;
             }
         }
     </style>
@@ -242,6 +251,11 @@
                     <div class="metric-label">Market Cap</div>
                     <div class="metric-value" id="market-cap">--</div>
                     <div class="metric-change" id="mcap-change">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">FDV</div>
+                    <div class="metric-value" id="fdv">--</div>
+                    <div class="metric-change" id="fdv-change">--</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-label">24H Volume</div>
@@ -307,6 +321,16 @@
                     const mcapChangeEl = document.getElementById('mcap-change');
                     mcapChangeEl.textContent = `${mcapChange >= 0 ? '+' : ''}${mcapChange.toFixed(2)}%`;
                     mcapChangeEl.className = mcapChange >= 0 ? 'metric-change positive' : 'metric-change negative';
+                    
+                    // FDV
+                    const fdv = data.market_data.fully_diluted_valuation.usd;
+                    document.getElementById('fdv').textContent = `$${formatLargeNumber(fdv)}`;
+                    
+                    // Calculate FDV change (approximate based on price change)
+                    const fdvChange = priceChange; // FDV changes proportionally with price
+                    const fdvChangeEl = document.getElementById('fdv-change');
+                    fdvChangeEl.textContent = `${fdvChange >= 0 ? '+' : ''}${fdvChange.toFixed(2)}%`;
+                    fdvChangeEl.className = fdvChange >= 0 ? 'metric-change positive' : 'metric-change negative';
                     
                     // Volume
                     const volume = data.market_data.total_volume.usd;
