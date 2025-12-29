@@ -8,3 +8,4 @@ A minimalist dashboard for tracking SUI and its ecosystem.
 - Clean, minimalist design
 - Real-time data from CoinGecko & Dexscreener API
 - News related to Sui
+- Track spot holdings in wallet address. 
