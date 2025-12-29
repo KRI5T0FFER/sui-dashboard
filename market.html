@@ -256,13 +256,26 @@
     <script>
         // Token list - Add new tokens here!
         const tokens = [
+            // Original tokens (with corrected IDs)
             { symbol: 'DEEP', name: 'DeepBook', id: 'deepbook' },
-            { symbol: 'WAL', name: 'Walrus', id: 'walrus-protocol' },
-            { symbol: 'NS', name: 'SuiNS', id: 'suins' },
+            { symbol: 'WAL', name: 'Walrus', id: 'walrus-2' },
+            { symbol: 'NS', name: 'SuiNS', id: 'suins-token' },
             { symbol: 'ALKIMI', name: 'Alkimi', id: 'alkimi' },
             { symbol: 'SEND', name: 'Suilend', id: 'suilend' },
             { symbol: 'IKA', name: 'Ika', id: 'ika' },
-            { symbol: 'BUT', name: 'Bucket', id: 'bucket-protocol' }
+            { symbol: 'BUCK', name: 'Bucket', id: 'bucket-token' },
+            
+            // New tokens
+            { symbol: 'NAVX', name: 'Navi', id: 'navi' },
+            { symbol: 'HAE', name: 'Haedal', id: 'haedal-protocol' },
+            { symbol: 'BLUE', name: 'Bluefin', id: 'bluefin' },
+            { symbol: 'CETUS', name: 'Cetus', id: 'cetus-protocol' },
+            { symbol: 'ALPHA', name: 'AlphaFi', id: 'alpha-fi' },
+            { symbol: 'SCA', name: 'Scallop', id: 'scallop-2' },
+            { symbol: 'DBL', name: 'DoubleUp', id: 'doubleup' },
+            { symbol: 'MOM', name: 'Momentum', id: 'momentum-2' },
+            { symbol: 'MNFST', name: 'Manifest', id: 'manifest-3' },
+            { symbol: 'LOFI', name: 'Lofi', id: 'lofi-2' }
         ];
         
         let marketData = [];
@@ -304,6 +317,9 @@
         }
         
         function formatNumber(num) {
+            if (num === 0 || num === null || num === undefined) {
+                return '<span style="color: #6b7280; font-size: 0.75rem;">Data unavailable</span>';
+            }
             if (num >= 1e9) return '$' + (num / 1e9).toFixed(2) + 'B';
             if (num >= 1e6) return '$' + (num / 1e6).toFixed(2) + 'M';
             if (num >= 1e3) return '$' + (num / 1e3).toFixed(2) + 'K';
@@ -311,6 +327,9 @@
         }
         
         function formatPrice(price) {
+            if (price === 0 || price === null || price === undefined) {
+                return '<span style="color: #6b7280; font-size: 0.75rem;">Data unavailable</span>';
+            }
             if (price >= 1) return '$' + price.toFixed(2);
             if (price >= 0.01) return '$' + price.toFixed(4);
             return '$' + price.toFixed(6);
@@ -407,7 +426,7 @@
                                 </td>
                                 <td class="price">${formatPrice(token.price)}</td>
                                 <td class="${token.change24h >= 0 ? 'change-positive' : 'change-negative'}">
-                                    ${token.change24h >= 0 ? '+' : ''}${token.change24h.toFixed(2)}%
+                                    ${token.change24h === 0 ? '<span style="color: #6b7280; font-size: 0.75rem;">Data unavailable</span>' : (token.change24h >= 0 ? '+' : '') + token.change24h.toFixed(2) + '%'}
                                 </td>
                                 <td>${formatNumber(token.marketCap)}</td>
                                 <td>${formatNumber(token.volume)}</td>
