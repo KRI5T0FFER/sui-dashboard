@@ -319,19 +319,6 @@
             font-family: 'IBM Plex Mono', monospace;
         }
         
-        /* Twitter Feed Container */
-        .twitter-feed-container {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
-            padding: 1.5rem;
-            min-height: 600px;
-        }
-        
-        .twitter-timeline {
-            height: 100% !important;
-        }
-        
         /* Loading & Error States */
         .loading {
             text-align: center;
@@ -398,21 +385,95 @@
                 </div>
             </div>
             
-            <!-- X Feed -->
+            <!-- X Accounts -->
             <div class="social-section">
                 <div class="section-header">
-                    <h2 class="section-title">Sui Network Updates</h2>
+                    <h2 class="section-title">Follow on X</h2>
                     <div class="section-line"></div>
                 </div>
                 
-                <div class="twitter-feed-container">
-                    <a class="twitter-timeline" 
-                       data-theme="dark" 
-                       data-chrome="noheader nofooter noborders transparent"
-                       data-tweet-limit="10"
-                       href="https://twitter.com/SuiNetwork?ref_src=twsrc%5Etfw">
-                       Loading posts from @SuiNetwork...
-                    </a>
+                <!-- Core Ecosystem -->
+                <div class="social-category">
+                    <h3 class="social-category-title">Core</h3>
+                    <div class="social-links">
+                        <a href="https://twitter.com/SuiNetwork" target="_blank" class="social-link">
+                            <div class="social-icon">
+                                <span class="social-icon-fallback">SUI</span>
+                            </div>
+                            <span class="social-name">Sui Network</span>
+                            <span class="social-platform">@SuiNetwork</span>
+                        </a>
+                        <a href="https://twitter.com/Mysten_Labs" target="_blank" class="social-link">
+                            <div class="social-icon">
+                                <span class="social-icon-fallback">MY</span>
+                            </div>
+                            <span class="social-name">Mysten Labs</span>
+                            <span class="social-platform">@Mysten_Labs</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- DeFi Protocols -->
+                <div class="social-category">
+                    <h3 class="social-category-title">DeFi</h3>
+                    <div class="social-links">
+                        <a href="https://twitter.com/DeepBookonSui" target="_blank" class="social-link">
+                            <div class="social-icon">
+                                <span class="social-icon-fallback">DE</span>
+                            </div>
+                            <span class="social-name">DeepBook</span>
+                            <span class="social-platform">@DeepBookonSui</span>
+                        </a>
+                        <a href="https://twitter.com/CetusProtocol" target="_blank" class="social-link">
+                            <div class="social-icon">
+                                <span class="social-icon-fallback">CE</span>
+                            </div>
+                            <span class="social-name">Cetus</span>
+                            <span class="social-platform">@CetusProtocol</span>
+                        </a>
+                        <a href="https://twitter.com/bluefinapp" target="_blank" class="social-link">
+                            <div class="social-icon">
+                                <span class="social-icon-fallback">BL</span>
+                            </div>
+                            <span class="social-name">Bluefin</span>
+                            <span class="social-platform">@bluefinapp</span>
+                        </a>
+                        <a href="https://twitter.com/suilendprotocol" target="_blank" class="social-link">
+                            <div class="social-icon">
+                                <span class="social-icon-fallback">SU</span>
+                            </div>
+                            <span class="social-name">Suilend</span>
+                            <span class="social-platform">@suilendprotocol</span>
+                        </a>
+                        <a href="https://twitter.com/bucket_protocol" target="_blank" class="social-link">
+                            <div class="social-icon">
+                                <span class="social-icon-fallback">BU</span>
+                            </div>
+                            <span class="social-name">Bucket</span>
+                            <span class="social-platform">@bucket_protocol</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Infrastructure -->
+                <div class="social-category">
+                    <h3 class="social-category-title">Infrastructure</h3>
+                    <div class="social-links">
+                        <a href="https://twitter.com/WalrusProtocol" target="_blank" class="social-link">
+                            <div class="social-icon">
+                                <span class="social-icon-fallback">WA</span>
+                            </div>
+                            <span class="social-name">Walrus</span>
+                            <span class="social-platform">@WalrusProtocol</span>
+                        </a>
+                        <a href="https://twitter.com/IkaProtocol" target="_blank" class="social-link">
+                            <div class="social-icon">
+                                <span class="social-icon-fallback">IK</span>
+                            </div>
+                            <span class="social-name">Ika</span>
+                            <span class="social-platform">@IkaProtocol</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -571,8 +632,5 @@
         // Refresh news every 10 minutes
         setInterval(loadAllNews, 600000);
     </script>
-    
-    <!-- Twitter Widget Script -->
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </body>
 </html>
