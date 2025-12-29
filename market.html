@@ -196,6 +196,22 @@
             font-size: 0.75rem;
             font-weight: 500;
             color: #3b82f6;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .token-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .token-icon-fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
         }
         
         .token-name {
@@ -434,7 +450,8 @@
                         fdv: coinData?.fully_diluted_valuation || 0,
                         volume: coinData?.total_volume || 0,
                         change24h: coinData?.price_change_percentage_24h || 0,
-                        sparkline: coinData?.sparkline_in_7d?.price || []
+                        sparkline: coinData?.sparkline_in_7d?.price || [],
+                        logo: coinData?.image || null // Get the logo URL from API
                     };
                 });
                 
@@ -541,6 +558,24 @@
             ctx.stroke();
         }
         
+        function getTokenIconHTML(token) {
+            if (token.logo) {
+                return `
+                    <img 
+                        src="${token.logo}" 
+                        alt="${token.symbol}" 
+                        loading="lazy"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                    />
+                    <div class="token-icon-fallback" style="display: none;">
+                        ${token.symbol.substring(0, 2)}
+                    </div>
+                `;
+            } else {
+                return `<div class="token-icon-fallback">${token.symbol.substring(0, 2)}</div>`;
+            }
+        }
+        
         function sortTable(column) {
             if (sortColumn === column) {
                 sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
@@ -598,7 +633,9 @@
                                 <td>
                                     <a href="https://www.coingecko.com/en/coins/${token.id}" target="_blank" class="token-link">
                                         <div class="token-info">
-                                            <div class="token-icon">${token.symbol.substring(0, 2)}</div>
+                                            <div class="token-icon">
+                                                ${getTokenIconHTML(token)}
+                                            </div>
                                             <div class="token-name">
                                                 <span class="token-symbol">${token.symbol}</span>
                                                 <span class="token-full-name">${token.name}</span>
