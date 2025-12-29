@@ -419,93 +419,189 @@
     </div>
     
     <script>
-        // News sources and articles
-        const newsArticles = [
+        // RSS Feed sources - Major news outlets
+        const newsOutlets = [
             {
-                source: 'Sui Blog',
-                title: 'Sui\'s Vision for 2025: Scaling the Future of Web3',
-                excerpt: 'As we enter 2025, Sui continues to push the boundaries of blockchain technology with unprecedented transaction speeds and innovative DeFi infrastructure.',
-                url: 'https://blog.sui.io/',
-                date: '2024-12-28'
+                name: 'Sui Blog',
+                url: 'https://blog.sui.io/feed/',
+                color: '#3b82f6'
             },
             {
-                source: 'CoinDesk',
-                title: 'DeepBook Protocol Emerges as Leading Liquidity Solution',
-                excerpt: 'DeepBook\'s on-chain order book architecture is revolutionizing DeFi trading with its CLOB model, offering traditional finance-level execution on blockchain.',
-                url: 'https://www.coindesk.com/',
-                date: '2024-12-27'
+                name: 'CoinDesk',
+                url: 'https://www.coindesk.com/arc/outboundfeeds/rss/',
+                color: '#3b82f6'
             },
             {
-                source: 'The Block',
-                title: 'Walrus Protocol Launches Decentralized Storage Network',
-                excerpt: 'Walrus brings decentralized storage to Sui ecosystem, enabling developers to build applications with efficient, censorship-resistant data storage.',
-                url: 'https://www.theblock.co/',
-                date: '2024-12-26'
+                name: 'The Block',
+                url: 'https://www.theblock.co/rss.xml',
+                color: '#3b82f6'
             },
             {
-                source: 'Decrypt',
-                title: 'Sui TVL Reaches New All-Time High',
-                excerpt: 'Total value locked in Sui DeFi protocols surpasses major milestones as ecosystem adoption accelerates across lending, trading, and staking platforms.',
-                url: 'https://decrypt.co/',
-                date: '2024-12-25'
+                name: 'Decrypt',
+                url: 'https://decrypt.co/feed',
+                color: '#3b82f6'
             },
             {
-                source: 'CoinTelegraph',
-                title: 'Move Language Gains Traction Among Developers',
-                excerpt: 'Sui\'s Move programming language attracts developers seeking safer smart contract development with built-in asset protection and resource management.',
-                url: 'https://cointelegraph.com/',
-                date: '2024-12-24'
-            },
-            {
-                source: 'Sui Blog',
-                title: 'Cetus DEX Introduces Advanced Trading Features',
-                excerpt: 'Cetus Protocol unveils concentrated liquidity pools and advanced order types, bringing sophisticated trading tools to Sui DeFi ecosystem.',
-                url: 'https://blog.sui.io/',
-                date: '2024-12-23'
-            },
-            {
-                source: 'CoinDesk',
-                title: 'Navi Protocol Expands Lending Markets',
-                excerpt: 'Navi introduces new lending markets and enhanced staking rewards, strengthening its position as a leading DeFi lending platform on Sui.',
-                url: 'https://www.coindesk.com/',
-                date: '2024-12-22'
-            },
-            {
-                source: 'The Block',
-                title: 'SuiNS Domain Registrations Surge',
-                excerpt: 'SuiNS sees record domain registrations as users embrace decentralized identity and naming services on the Sui blockchain.',
-                url: 'https://www.theblock.co/',
-                date: '2024-12-21'
-            },
-            {
-                source: 'Decrypt',
-                title: 'Bluefin Trading Volume Hits New Record',
-                excerpt: 'Bluefin DEX reports unprecedented trading volumes as sophisticated traders migrate to Sui for its low-latency execution and deep liquidity.',
-                url: 'https://decrypt.co/',
-                date: '2024-12-20'
-            },
-            {
-                source: 'CoinTelegraph',
-                title: 'Sui Foundation Announces Developer Grants',
-                excerpt: 'Major grant program launched to support innovative projects building on Sui, focusing on DeFi, gaming, and infrastructure development.',
-                url: 'https://cointelegraph.com/',
-                date: '2024-12-19'
-            },
-            {
-                source: 'Sui Blog',
-                title: 'Scallop Lending Protocol Sees Record Growth',
-                excerpt: 'Scallop reports significant growth in lending activity and total value locked, attracting both retail and institutional users to its platform.',
-                url: 'https://blog.sui.io/',
-                date: '2024-12-18'
-            },
-            {
-                source: 'CoinDesk',
-                title: 'Sui Ecosystem Surpasses 1 Billion Transactions',
-                excerpt: 'Sui blockchain reaches historic milestone with over 1 billion total transactions, demonstrating robust network activity and user adoption.',
-                url: 'https://www.coindesk.com/',
-                date: '2024-12-17'
+                name: 'CoinTelegraph',
+                url: 'https://cointelegraph.com/rss',
+                color: '#3b82f6'
             }
         ];
+        
+        // Ecosystem project blogs/feeds
+        const projectFeeds = [
+            {
+                name: 'DeepBook',
+                url: 'https://deepbook.tech/blog/rss.xml', // May need adjustment
+                twitter: 'DeepBookonSui',
+                keywords: ['deepbook', 'deep', 'clob']
+            },
+            {
+                name: 'Cetus',
+                url: null,
+                twitter: 'CetusProtocol',
+                keywords: ['cetus']
+            },
+            {
+                name: 'Navi Protocol',
+                url: null,
+                twitter: 'naviprotocol',
+                keywords: ['navi', 'navx']
+            },
+            {
+                name: 'Scallop',
+                url: null,
+                twitter: 'Scallop_io',
+                keywords: ['scallop', 'sca']
+            },
+            {
+                name: 'Bluefin',
+                url: null,
+                twitter: 'bluefinapp',
+                keywords: ['bluefin', 'blue']
+            },
+            {
+                name: 'Bucket Protocol',
+                url: null,
+                twitter: 'bucket_protocol',
+                keywords: ['bucket', 'buck']
+            },
+            {
+                name: 'Suilend',
+                url: null,
+                twitter: 'suilendprotocol',
+                keywords: ['suilend', 'send']
+            },
+            {
+                name: 'AlphaFi',
+                url: null,
+                twitter: 'AlphaFi_xyz',
+                keywords: ['alphafi', 'alpha']
+            },
+            {
+                name: 'Haedal',
+                url: null,
+                twitter: 'HaedalProtocol',
+                keywords: ['haedal', 'hae']
+            },
+            {
+                name: 'Walrus',
+                url: null,
+                twitter: 'WalrusProtocol',
+                keywords: ['walrus', 'wal']
+            },
+            {
+                name: 'SuiNS',
+                url: null,
+                twitter: 'SuiNS_',
+                keywords: ['suins', 'ns']
+            },
+            {
+                name: 'Momentum',
+                url: null,
+                twitter: 'MomentumSafe',
+                keywords: ['momentum', 'mom']
+            },
+            {
+                name: 'Ika Protocol',
+                url: null,
+                twitter: 'IkaProtocol',
+                keywords: ['ika']
+            }
+        ];
+        
+        let allArticles = [];
+        
+        async function fetchRSSFeed(source) {
+            try {
+                const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}&count=10`);
+                const data = await response.json();
+                
+                if (data.status === 'ok' && data.items) {
+                    return data.items.map(item => ({
+                        source: source.name,
+                        title: item.title,
+                        excerpt: stripHtml(item.description || item.content || '').substring(0, 200) + '...',
+                        url: item.link,
+                        date: item.pubDate,
+                        thumbnail: item.thumbnail || null
+                    }));
+                }
+                return [];
+            } catch (error) {
+                console.error(`Error fetching ${source.name}:`, error);
+                return [];
+            }
+        }
+        
+        function stripHtml(html) {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || '';
+        }
+        
+        async function loadAllNews() {
+            const container = document.getElementById('news-container');
+            container.innerHTML = '<div class="loading">Loading latest news from Sui ecosystem...</div>';
+            
+            // Fetch from major news outlets
+            const newsPromises = newsOutlets.map(source => fetchRSSFeed(source));
+            const newsResults = await Promise.all(newsPromises);
+            
+            // Fetch from project feeds (if they have RSS)
+            const projectPromises = projectFeeds
+                .filter(project => project.url)
+                .map(project => fetchRSSFeed(project));
+            const projectResults = await Promise.all(projectPromises);
+            
+            // Combine all articles
+            allArticles = [...newsResults.flat(), ...projectResults.flat()];
+            allArticles.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Create comprehensive keyword list from all projects
+            const allKeywords = [
+                'sui', 'mysten', 'move language',
+                ...projectFeeds.flatMap(p => p.keywords)
+            ];
+            
+            // Filter for Sui/ecosystem-related content
+            const filteredArticles = allArticles.filter(article => {
+                const text = (article.title + ' ' + article.excerpt).toLowerCase();
+                return allKeywords.some(keyword => text.includes(keyword.toLowerCase()));
+            });
+            
+            // Show filtered articles, or all if none match
+            const articlesToShow = filteredArticles.length > 0 
+                ? filteredArticles.slice(0, 25) 
+                : allArticles.slice(0, 25);
+            
+            if (articlesToShow.length === 0) {
+                container.innerHTML = '<div class="loading">No articles found. Please try again later.</div>';
+                return;
+            }
+            
+            renderNews(articlesToShow);
+        }
         
         function formatDate(dateString) {
             const date = new Date(dateString);
@@ -516,14 +612,15 @@
             if (diffDays === 0) return 'Today';
             if (diffDays === 1) return 'Yesterday';
             if (diffDays < 7) return `${diffDays}d ago`;
+            if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
             
             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
         
-        function renderNews() {
+        function renderNews(articles) {
             const container = document.getElementById('news-container');
             
-            const html = newsArticles.map(article => `
+            const html = articles.map(article => `
                 <div class="news-card">
                     <div class="news-meta">
                         <span class="news-source">${article.source}</span>
@@ -538,8 +635,11 @@
             container.innerHTML = html;
         }
         
-        // Initialize
-        renderNews();
+        // Initialize - Load news on page load
+        loadAllNews();
+        
+        // Refresh news every 10 minutes
+        setInterval(loadAllNews, 600000);
     </script>
     
     <!-- Twitter Widget Script -->
