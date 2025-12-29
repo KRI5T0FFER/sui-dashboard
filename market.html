@@ -234,6 +234,12 @@
             border: 1px solid rgba(59, 130, 246, 0.2);
         }
         
+        .category-infrastructure {
+            background: rgba(6, 182, 212, 0.1);
+            color: #06b6d4;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+        
         .category-ads {
             background: rgba(236, 72, 153, 0.1);
             color: #ec4899;
@@ -250,24 +256,6 @@
             background: rgba(139, 92, 246, 0.1);
             color: #8b5cf6;
             border: 1px solid rgba(139, 92, 246, 0.2);
-        }
-        
-        .category-domain {
-            background: rgba(6, 182, 212, 0.1);
-            color: #06b6d4;
-            border: 1px solid rgba(6, 182, 212, 0.2);
-        }
-        
-        .category-storage {
-            background: rgba(168, 85, 247, 0.1);
-            color: #a855f7;
-            border: 1px solid rgba(168, 85, 247, 0.2);
-        }
-        
-        .category-interop {
-            background: rgba(249, 115, 22, 0.1);
-            color: #f97316;
-            border: 1px solid rgba(249, 115, 22, 0.2);
         }
         
         .price {
@@ -352,7 +340,7 @@
                 type="text" 
                 id="search-input" 
                 class="search-input" 
-                placeholder="Search by token name or category (e.g., DEX, Lending, Meme)..."
+                placeholder="Search by token name or category (e.g., Dex, Lending, Meme)..."
                 oninput="filterTokens()"
             />
         </div>
@@ -365,19 +353,17 @@
     <script>
         // Token list with main categories and subcategories
         const tokens = [
-            // DeFi - DEX
-            { symbol: 'DEEP', name: 'DeepBook', id: 'deepbook', category: 'DeFi', subcategories: ['DEX'] },
-            { symbol: 'CETUS', name: 'Cetus', id: 'cetus-protocol', category: 'DeFi', subcategories: ['DEX'] },
-            { symbol: 'MOM', name: 'Momentum', id: 'momentum-2', category: 'DeFi', subcategories: ['DEX'] },
+            // DeFi - Dex
+            { symbol: 'DEEP', name: 'DeepBook', id: 'deepbook', category: 'DeFi', subcategories: ['Dex'] },
+            { symbol: 'CETUS', name: 'Cetus', id: 'cetus-protocol', category: 'DeFi', subcategories: ['Dex'] },
+            { symbol: 'MOM', name: 'Momentum', id: 'momentum-2', category: 'DeFi', subcategories: ['Dex'] },
+            { symbol: 'BLUE', name: 'Bluefin', id: 'bluefin', category: 'DeFi', subcategories: ['Dex', 'Trading'] },
             
             // DeFi - Lending
             { symbol: 'SCA', name: 'Scallop', id: 'scallop-2', category: 'DeFi', subcategories: ['Lending'] },
-            { symbol: 'NAVX', name: 'Navi', id: 'navi', category: 'DeFi', subcategories: ['Lending'] },
-            { symbol: 'SEND', name: 'Suilend', id: 'suilend', category: 'DeFi', subcategories: ['Lending'] },
+            { symbol: 'NAVX', name: 'Navi', id: 'navi', category: 'DeFi', subcategories: ['Lending', 'Staking'] },
+            { symbol: 'SEND', name: 'Suilend', id: 'suilend', category: 'DeFi', subcategories: ['Lending', 'Staking'] },
             { symbol: 'ALPHA', name: 'AlphaFi', id: 'alpha-fi', category: 'DeFi', subcategories: ['Lending'] },
-            
-            // DeFi - Trading
-            { symbol: 'BLUE', name: 'Bluefin', id: 'bluefin', category: 'DeFi', subcategories: ['Trading'] },
             
             // DeFi - Staking
             { symbol: 'HAE', name: 'Haedal', id: 'haedal-protocol', category: 'DeFi', subcategories: ['Staking'] },
@@ -385,14 +371,16 @@
             // DeFi - Stablecoin
             { symbol: 'BUCK', name: 'Bucket', id: 'bucket-token', category: 'DeFi', subcategories: ['Stablecoin'] },
             
+            // Infrastructure
+            { symbol: 'WAL', name: 'Walrus', id: 'walrus-2', category: 'Infrastructure', subcategories: ['Data Storage'] },
+            { symbol: 'IKA', name: 'Ika', id: 'ika', category: 'Infrastructure', subcategories: ['Interoperability'] },
+            { symbol: 'NS', name: 'SuiNS', id: 'suins-token', category: 'Infrastructure', subcategories: ['Domain'] },
+            
             // Other categories
             { symbol: 'ALKIMI', name: 'Alkimi', id: 'alkimi', category: 'Ads', subcategories: [] },
             { symbol: 'DBL', name: 'DoubleUp', id: 'doubleup', category: 'Gambling', subcategories: [] },
             { symbol: 'LOFI', name: 'Lofi', id: 'lofi-2', category: 'Meme', subcategories: ['Brand', 'Charity'] },
-            { symbol: 'MNFST', name: 'Manifest', id: 'manifest-3', category: 'Meme', subcategories: ['Movement', 'DAT'] },
-            { symbol: 'NS', name: 'SuiNS', id: 'suins-token', category: 'Domain', subcategories: [] },
-            { symbol: 'WAL', name: 'Walrus', id: 'walrus-2', category: 'Data Storage', subcategories: [] },
-            { symbol: 'IKA', name: 'Ika', id: 'ika', category: 'Interoperability', subcategories: [] }
+            { symbol: 'MNFST', name: 'Manifest', id: 'manifest-3', category: 'Meme', subcategories: ['Movement', 'DAT'] }
         ];
         
         let marketData = [];
@@ -402,12 +390,10 @@
         function getCategoryClass(category) {
             const categoryMap = {
                 'DeFi': 'defi',
+                'Infrastructure': 'infrastructure',
                 'Ads': 'ads',
                 'Gambling': 'gambling',
-                'Meme': 'meme',
-                'Domain': 'domain',
-                'Data Storage': 'storage',
-                'Interoperability': 'interop'
+                'Meme': 'meme'
             };
             return `category-${categoryMap[category] || 'defi'}`;
         }
