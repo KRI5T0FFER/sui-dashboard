@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUI — Market Intelligence</title>
+    <title>SUITE — SUI Market Intelligence</title>
     <style>
         * {
             margin: 0;
@@ -37,6 +37,9 @@
             font-weight: 300;
             letter-spacing: 0.1em;
             color: #ffffff;
+        }
+        .nav-logo .te {
+            color: #3b82f6;
         }
         .nav-links {
             display: flex;
@@ -117,8 +120,8 @@
             padding: 3rem 0;
         }
         .chart-container {
-            max-width: 90rem;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 100%;
             padding: 0 3rem;
         }
         .chart-controls {
@@ -126,6 +129,9 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
+            max-width: 90rem;
+            margin-left: auto;
+            margin-right: auto;
         }
         .timeframe-buttons {
             display: flex;
@@ -177,6 +183,8 @@
         }
         .chart-canvas-container {
             width: 100%;
+            max-width: 90rem;
+            margin: 0 auto;
             height: 500px;
             position: relative;
         }
@@ -189,7 +197,8 @@
             letter-spacing: 0.05em;
         }
         canvas {
-            max-width: 100%;
+            width: 100% !important;
+            height: 500px !important;
         }
         
         @media (max-width: 768px) {
@@ -209,7 +218,7 @@
 <body>
     <!-- Navigation -->
     <nav class="nav">
-        <div class="nav-logo">SUI</div>
+        <div class="nav-logo">SUI<span class="te">TE</span></div>
         <div class="nav-links">
             <a href="#" class="active">Home</a>
             <a href="#market">Market</a>
@@ -220,7 +229,7 @@
     <!-- Hero Section -->
     <div class="container">
         <div class="hero">
-            <h1 class="hero-title">Market Intelligence</h1>
+            <h1 class="hero-title">SUI</h1>
             
             <div class="metrics">
                 <div class="metric-card">
@@ -337,7 +346,8 @@
             const canvas = document.getElementById('chart');
             const ctx = canvas.getContext('2d');
             
-            canvas.width = canvas.offsetWidth;
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
             canvas.height = 500;
             
             if (chartData.length === 0) return;
@@ -356,7 +366,7 @@
             const width = canvas.width;
             const height = canvas.height;
             const paddingLeft = 80;
-            const paddingRight = 40;
+            const paddingRight = 80;
             const paddingTop = 40;
             const paddingBottom = 60;
             const chartWidth = width - paddingLeft - paddingRight;
@@ -457,7 +467,8 @@
             const canvas = document.getElementById('chart');
             const ctx = canvas.getContext('2d');
             
-            canvas.width = canvas.offsetWidth;
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
             canvas.height = 500;
             
             if (chartData.length === 0) return;
@@ -488,7 +499,7 @@
             const width = canvas.width;
             const height = canvas.height;
             const paddingLeft = 80;
-            const paddingRight = 40;
+            const paddingRight = 80;
             const paddingTop = 40;
             const paddingBottom = 60;
             const chartWidth = width - paddingLeft - paddingRight;
@@ -508,7 +519,7 @@
             }
             
             // Draw candles
-            const candleWidth = Math.max(2, chartWidth / candles.length - 2);
+            const candleWidth = Math.max(2, (chartWidth / candles.length) * 0.6);
             
             candles.forEach((candle, i) => {
                 const x = paddingLeft + (i / (candles.length - 1)) * chartWidth;
