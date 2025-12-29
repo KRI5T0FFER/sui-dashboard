@@ -85,6 +85,65 @@
             letter-spacing: 0.05em;
         }
         
+        /* Address Input Section */
+        .address-input-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            padding: 4rem 3rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .input-title {
+            font-size: 2rem;
+            font-weight: 200;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+        
+        .input-subtitle {
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: #6b7280;
+            margin-bottom: 3rem;
+            letter-spacing: 0.05em;
+        }
+        
+        .address-input-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .address-input {
+            display: flex;
+            gap: 1rem;
+            align-items: stretch;
+        }
+        
+        .address-input input {
+            flex: 1;
+            padding: 1.5rem 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 0.875rem;
+            font-weight: 300;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .address-input input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .address-input input::placeholder {
+            color: #6b7280;
+        }
+        
         /* Wallet Connect Section */
         .wallet-connect-section {
             background: rgba(255, 255, 255, 0.02);
@@ -119,7 +178,7 @@
         }
         
         .btn {
-            padding: 1rem 2rem;
+            padding: 1.5rem 2.5rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 4px;
             font-size: 0.875rem;
@@ -129,6 +188,7 @@
             letter-spacing: 0.05em;
             background: none;
             color: #ffffff;
+            white-space: nowrap;
         }
         
         .btn-primary {
@@ -455,54 +515,6 @@
             font-weight: 300;
         }
         
-        /* NFT Grid */
-        .nft-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 1rem;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-        
-        .nft-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
-            overflow: hidden;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        
-        .nft-card:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(59, 130, 246, 0.2);
-            transform: translateY(-2px);
-        }
-        
-        .nft-image {
-            width: 100%;
-            aspect-ratio: 1;
-            object-fit: cover;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%);
-        }
-        
-        .nft-info {
-            padding: 1rem;
-        }
-        
-        .nft-name {
-            font-weight: 300;
-            font-size: 0.875rem;
-            margin-bottom: 0.25rem;
-            color: #ffffff;
-        }
-        
-        .nft-collection {
-            font-size: 0.75rem;
-            color: #6b7280;
-            font-weight: 300;
-        }
-        
         /* Loading States */
         .loading {
             text-align: center;
@@ -610,10 +622,6 @@
                 width: 100%;
                 justify-content: center;
             }
-            
-            .nft-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            }
         }
     </style>
 </head>
@@ -677,10 +685,6 @@
                         <div class="stat-label">Token Types</div>
                         <div class="stat-value" id="tokenCount">--</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">NFTs Owned</div>
-                        <div class="stat-value" id="nftCount">--</div>
-                    </div>
                 </div>
             </div>
             
@@ -702,19 +706,6 @@
                             <div class="spinner"></div>
                             Loading token balances...
                         </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- NFT Gallery -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">NFT Collection</div>
-                </div>
-                <div id="nftGridContent">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        Loading NFTs...
                     </div>
                 </div>
             </div>
@@ -853,7 +844,7 @@
             document.getElementById('inputSection').style.display = 'none';
             document.getElementById('walletDashboard').classList.add('active');
             document.getElementById('walletAddress').textContent = formatAddress(address);
-            await Promise.all([loadTokenBalances(address), loadNFTs(address)]);
+            await loadTokenBalances(address);
         }
         
         async function loadTokenBalances(address) {
@@ -999,72 +990,6 @@
                 return data.result || { decimals: 9, symbol: 'Unknown', name: 'Unknown' };
             } catch (error) {
                 return { decimals: 9, symbol: 'Unknown', name: 'Unknown' };
-            }
-        }
-        
-        async function loadNFTs(address) {
-            try {
-                const response = await fetch(SUI_RPC, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        jsonrpc: '2.0',
-                        id: 1,
-                        method: 'suix_getOwnedObjects',
-                        params: [address, {
-                            filter: { MatchAll: [{ StructType: "0x2::display::Display" }] },
-                            options: { showType: true, showContent: true, showDisplay: true }
-                        }, null, 50]
-                    })
-                });
-                
-                const data = await response.json();
-                const objects = data.result?.data || [];
-                const nfts = objects.filter(obj => {
-                    const type = obj.data?.type || '';
-                    return type.includes('::') && !type.includes('coin::Coin');
-                });
-                
-                if (nfts.length === 0) {
-                    document.getElementById('nftGridContent').innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">🖼️</div>
-                            <p>No NFTs found</p>
-                        </div>
-                    `;
-                    document.getElementById('nftCount').textContent = '0';
-                    return;
-                }
-                
-                let nftHtml = '<div class="nft-grid">';
-                for (const nft of nfts.slice(0, 24)) {
-                    const display = nft.data?.display?.data || {};
-                    const name = display.name || 'Unknown NFT';
-                    const imageUrl = display.image_url || display.img_url || '';
-                    const collection = display.collection || 'Sui NFT';
-                    
-                    nftHtml += `
-                        <div class="nft-card">
-                            <div class="nft-image" style="${imageUrl ? `background-image: url('${imageUrl}'); background-size: cover;` : ''}"></div>
-                            <div class="nft-info">
-                                <div class="nft-name">${name}</div>
-                                <div class="nft-collection">${collection}</div>
-                            </div>
-                        </div>
-                    `;
-                }
-                nftHtml += '</div>';
-                
-                document.getElementById('nftGridContent').innerHTML = nftHtml;
-                document.getElementById('nftCount').textContent = nfts.length;
-            } catch (error) {
-                console.error('Error loading NFTs:', error);
-                document.getElementById('nftGridContent').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">⚠️</div>
-                        <p>Error loading NFTs</p>
-                    </div>
-                `;
             }
         }
         
