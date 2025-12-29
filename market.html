@@ -179,6 +179,63 @@
             color: #6b7280;
         }
         
+        .category-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 400;
+            letter-spacing: 0.02em;
+        }
+        
+        .category-defi {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .category-ads {
+            background: rgba(236, 72, 153, 0.1);
+            color: #ec4899;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+        }
+        
+        .category-gambling {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .category-brand {
+            background: rgba(139, 92, 246, 0.1);
+            color: #8b5cf6;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        
+        .category-movement {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .category-domain {
+            background: rgba(6, 182, 212, 0.1);
+            color: #06b6d4;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+        
+        .category-storage {
+            background: rgba(168, 85, 247, 0.1);
+            color: #a855f7;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+        }
+        
+        .category-interop {
+            background: rgba(249, 115, 22, 0.1);
+            color: #f97316;
+            border: 1px solid rgba(249, 115, 22, 0.2);
+        }
+        
         .price {
             color: #ffffff;
             font-weight: 400;
@@ -254,33 +311,47 @@
     </div>
     
     <script>
-        // Token list - Add new tokens here!
+        // Token list with categories
         const tokens = [
-            // Original tokens (with corrected IDs)
-            { symbol: 'DEEP', name: 'DeepBook', id: 'deepbook' },
-            { symbol: 'WAL', name: 'Walrus', id: 'walrus-2' },
-            { symbol: 'NS', name: 'SuiNS', id: 'suins-token' },
-            { symbol: 'ALKIMI', name: 'Alkimi', id: 'alkimi' },
-            { symbol: 'SEND', name: 'Suilend', id: 'suilend' },
-            { symbol: 'IKA', name: 'Ika', id: 'ika' },
-            { symbol: 'BUCK', name: 'Bucket', id: 'bucket-token' },
+            // DeFi
+            { symbol: 'DEEP', name: 'DeepBook', id: 'deepbook', category: 'DeFi' },
+            { symbol: 'CETUS', name: 'Cetus', id: 'cetus-protocol', category: 'DeFi' },
+            { symbol: 'BLUE', name: 'Bluefin', id: 'bluefin', category: 'DeFi' },
+            { symbol: 'NAVX', name: 'Navi', id: 'navi', category: 'DeFi' },
+            { symbol: 'SEND', name: 'Suilend', id: 'suilend', category: 'DeFi' },
+            { symbol: 'SCA', name: 'Scallop', id: 'scallop-2', category: 'DeFi' },
+            { symbol: 'HAE', name: 'Haedal', id: 'haedal-protocol', category: 'DeFi' },
+            { symbol: 'BUCK', name: 'Bucket', id: 'bucket-token', category: 'DeFi' },
+            { symbol: 'ALPHA', name: 'AlphaFi', id: 'alpha-fi', category: 'DeFi' },
+            { symbol: 'MOM', name: 'Momentum', id: 'momentum-2', category: 'DeFi' },
             
-            // New tokens
-            { symbol: 'NAVX', name: 'Navi', id: 'navi' },
-            { symbol: 'HAE', name: 'Haedal', id: 'haedal-protocol' },
-            { symbol: 'BLUE', name: 'Bluefin', id: 'bluefin' },
-            { symbol: 'CETUS', name: 'Cetus', id: 'cetus-protocol' },
-            { symbol: 'ALPHA', name: 'AlphaFi', id: 'alpha-fi' },
-            { symbol: 'SCA', name: 'Scallop', id: 'scallop-2' },
-            { symbol: 'DBL', name: 'DoubleUp', id: 'doubleup' },
-            { symbol: 'MOM', name: 'Momentum', id: 'momentum-2' },
-            { symbol: 'MNFST', name: 'Manifest', id: 'manifest-3' },
-            { symbol: 'LOFI', name: 'Lofi', id: 'lofi-2' }
+            // Other categories
+            { symbol: 'ALKIMI', name: 'Alkimi', id: 'alkimi', category: 'Ads' },
+            { symbol: 'DBL', name: 'DoubleUp', id: 'doubleup', category: 'Gambling' },
+            { symbol: 'LOFI', name: 'Lofi', id: 'lofi-2', category: 'Brand' },
+            { symbol: 'MNFST', name: 'Manifest', id: 'manifest-3', category: 'Movement' },
+            { symbol: 'NS', name: 'SuiNS', id: 'suins-token', category: 'Domain' },
+            { symbol: 'WAL', name: 'Walrus', id: 'walrus-2', category: 'Data Storage' },
+            { symbol: 'IKA', name: 'Ika', id: 'ika', category: 'Interoperability' }
         ];
         
         let marketData = [];
         let sortColumn = 'marketCap';
         let sortDirection = 'desc';
+        
+        function getCategoryClass(category) {
+            const categoryMap = {
+                'DeFi': 'defi',
+                'Ads': 'ads',
+                'Gambling': 'gambling',
+                'Brand': 'brand',
+                'Movement': 'movement',
+                'Domain': 'domain',
+                'Data Storage': 'storage',
+                'Interoperability': 'interop'
+            };
+            return `category-${categoryMap[category] || 'defi'}`;
+        }
         
         async function fetchMarketData() {
             try {
@@ -300,8 +371,10 @@
                         symbol: token.symbol,
                         name: token.name,
                         id: token.id,
+                        category: token.category,
                         price: coinData?.current_price || 0,
                         marketCap: coinData?.market_cap || 0,
+                        fdv: coinData?.fully_diluted_valuation || 0,
                         volume: coinData?.total_volume || 0,
                         change24h: coinData?.price_change_percentage_24h || 0,
                         sparkline: coinData?.sparkline_in_7d?.price || []
@@ -403,9 +476,11 @@
                     <thead>
                         <tr>
                             <th onclick="sortTable('name')">Token</th>
+                            <th onclick="sortTable('category')">Category</th>
                             <th onclick="sortTable('price')">Price</th>
                             <th onclick="sortTable('change24h')">24h %</th>
                             <th onclick="sortTable('marketCap')">Market Cap</th>
+                            <th onclick="sortTable('fdv')">FDV</th>
                             <th onclick="sortTable('volume')">Volume (24h)</th>
                             <th>Last 7 Days</th>
                         </tr>
@@ -424,11 +499,15 @@
                                         </div>
                                     </a>
                                 </td>
+                                <td>
+                                    <span class="category-badge ${getCategoryClass(token.category)}">${token.category}</span>
+                                </td>
                                 <td class="price">${formatPrice(token.price)}</td>
                                 <td class="${token.change24h >= 0 ? 'change-positive' : 'change-negative'}">
                                     ${token.change24h === 0 ? '<span style="color: #6b7280; font-size: 0.75rem;">Data unavailable</span>' : (token.change24h >= 0 ? '+' : '') + token.change24h.toFixed(2) + '%'}
                                 </td>
                                 <td>${formatNumber(token.marketCap)}</td>
+                                <td>${formatNumber(token.fdv)}</td>
                                 <td>${formatNumber(token.volume)}</td>
                                 <td class="chart-cell">
                                     <canvas id="chart-${index}" class="mini-chart" width="150" height="40"></canvas>
