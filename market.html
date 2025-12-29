@@ -67,7 +67,7 @@
         }
         
         .page-header {
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
         }
         
         .page-title {
@@ -83,6 +83,35 @@
             font-weight: 300;
             color: #6b7280;
             letter-spacing: 0.05em;
+        }
+        
+        /* Search Bar */
+        .search-container {
+            margin-bottom: 2rem;
+        }
+        
+        .search-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 0.875rem;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .search-input::placeholder {
+            color: #6b7280;
         }
         
         /* Table */
@@ -125,6 +154,10 @@
         
         .market-table tbody tr:hover {
             background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .market-table tbody tr.hidden {
+            display: none;
         }
         
         .market-table tbody td {
@@ -179,13 +212,20 @@
             color: #6b7280;
         }
         
+        .category-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
         .category-badge {
             display: inline-block;
             padding: 0.25rem 0.75rem;
             border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 400;
             letter-spacing: 0.02em;
+            white-space: nowrap;
         }
         
         .category-defi {
@@ -206,16 +246,10 @@
             border: 1px solid rgba(245, 158, 11, 0.2);
         }
         
-        .category-brand {
+        .category-meme {
             background: rgba(139, 92, 246, 0.1);
             color: #8b5cf6;
             border: 1px solid rgba(139, 92, 246, 0.2);
-        }
-        
-        .category-movement {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.2);
         }
         
         .category-domain {
@@ -272,6 +306,13 @@
             font-size: 0.875rem;
         }
         
+        .no-results {
+            text-align: center;
+            padding: 4rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 8rem 1.5rem 4rem 1.5rem;
@@ -305,34 +346,53 @@
             <p class="page-subtitle">SUI ecosystem tokens · Real-time data</p>
         </div>
         
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input 
+                type="text" 
+                id="search-input" 
+                class="search-input" 
+                placeholder="Search by token name or category (e.g., DEX, Lending, Meme)..."
+                oninput="filterTokens()"
+            />
+        </div>
+        
         <div id="table-container">
             <div class="loading">Loading market data...</div>
         </div>
     </div>
     
     <script>
-        // Token list with categories
+        // Token list with main categories and subcategories
         const tokens = [
-            // DeFi
-            { symbol: 'DEEP', name: 'DeepBook', id: 'deepbook', category: 'DeFi' },
-            { symbol: 'CETUS', name: 'Cetus', id: 'cetus-protocol', category: 'DeFi' },
-            { symbol: 'BLUE', name: 'Bluefin', id: 'bluefin', category: 'DeFi' },
-            { symbol: 'NAVX', name: 'Navi', id: 'navi', category: 'DeFi' },
-            { symbol: 'SEND', name: 'Suilend', id: 'suilend', category: 'DeFi' },
-            { symbol: 'SCA', name: 'Scallop', id: 'scallop-2', category: 'DeFi' },
-            { symbol: 'HAE', name: 'Haedal', id: 'haedal-protocol', category: 'DeFi' },
-            { symbol: 'BUCK', name: 'Bucket', id: 'bucket-token', category: 'DeFi' },
-            { symbol: 'ALPHA', name: 'AlphaFi', id: 'alpha-fi', category: 'DeFi' },
-            { symbol: 'MOM', name: 'Momentum', id: 'momentum-2', category: 'DeFi' },
+            // DeFi - DEX
+            { symbol: 'DEEP', name: 'DeepBook', id: 'deepbook', category: 'DeFi', subcategories: ['DEX'] },
+            { symbol: 'CETUS', name: 'Cetus', id: 'cetus-protocol', category: 'DeFi', subcategories: ['DEX'] },
+            { symbol: 'MOM', name: 'Momentum', id: 'momentum-2', category: 'DeFi', subcategories: ['DEX'] },
+            
+            // DeFi - Lending
+            { symbol: 'SCA', name: 'Scallop', id: 'scallop-2', category: 'DeFi', subcategories: ['Lending'] },
+            { symbol: 'NAVX', name: 'Navi', id: 'navi', category: 'DeFi', subcategories: ['Lending'] },
+            { symbol: 'SEND', name: 'Suilend', id: 'suilend', category: 'DeFi', subcategories: ['Lending'] },
+            { symbol: 'ALPHA', name: 'AlphaFi', id: 'alpha-fi', category: 'DeFi', subcategories: ['Lending'] },
+            
+            // DeFi - Trading
+            { symbol: 'BLUE', name: 'Bluefin', id: 'bluefin', category: 'DeFi', subcategories: ['Trading'] },
+            
+            // DeFi - Staking
+            { symbol: 'HAE', name: 'Haedal', id: 'haedal-protocol', category: 'DeFi', subcategories: ['Staking'] },
+            
+            // DeFi - Stablecoin
+            { symbol: 'BUCK', name: 'Bucket', id: 'bucket-token', category: 'DeFi', subcategories: ['Stablecoin'] },
             
             // Other categories
-            { symbol: 'ALKIMI', name: 'Alkimi', id: 'alkimi', category: 'Ads' },
-            { symbol: 'DBL', name: 'DoubleUp', id: 'doubleup', category: 'Gambling' },
-            { symbol: 'LOFI', name: 'Lofi', id: 'lofi-2', category: 'Brand' },
-            { symbol: 'MNFST', name: 'Manifest', id: 'manifest-3', category: 'Movement' },
-            { symbol: 'NS', name: 'SuiNS', id: 'suins-token', category: 'Domain' },
-            { symbol: 'WAL', name: 'Walrus', id: 'walrus-2', category: 'Data Storage' },
-            { symbol: 'IKA', name: 'Ika', id: 'ika', category: 'Interoperability' }
+            { symbol: 'ALKIMI', name: 'Alkimi', id: 'alkimi', category: 'Ads', subcategories: [] },
+            { symbol: 'DBL', name: 'DoubleUp', id: 'doubleup', category: 'Gambling', subcategories: [] },
+            { symbol: 'LOFI', name: 'Lofi', id: 'lofi-2', category: 'Meme', subcategories: ['Brand', 'Charity'] },
+            { symbol: 'MNFST', name: 'Manifest', id: 'manifest-3', category: 'Meme', subcategories: ['Movement', 'DAT'] },
+            { symbol: 'NS', name: 'SuiNS', id: 'suins-token', category: 'Domain', subcategories: [] },
+            { symbol: 'WAL', name: 'Walrus', id: 'walrus-2', category: 'Data Storage', subcategories: [] },
+            { symbol: 'IKA', name: 'Ika', id: 'ika', category: 'Interoperability', subcategories: [] }
         ];
         
         let marketData = [];
@@ -344,8 +404,7 @@
                 'DeFi': 'defi',
                 'Ads': 'ads',
                 'Gambling': 'gambling',
-                'Brand': 'brand',
-                'Movement': 'movement',
+                'Meme': 'meme',
                 'Domain': 'domain',
                 'Data Storage': 'storage',
                 'Interoperability': 'interop'
@@ -372,6 +431,7 @@
                         name: token.name,
                         id: token.id,
                         category: token.category,
+                        subcategories: token.subcategories,
                         price: coinData?.current_price || 0,
                         marketCap: coinData?.market_cap || 0,
                         fdv: coinData?.fully_diluted_valuation || 0,
@@ -393,6 +453,36 @@
         
         function sortByMarketCap() {
             marketData.sort((a, b) => b.marketCap - a.marketCap);
+        }
+        
+        function filterTokens() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.querySelectorAll('.market-table tbody tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const tokenData = row.getAttribute('data-search');
+                if (tokenData.includes(searchTerm)) {
+                    row.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+            
+            // Show "no results" message if nothing matches
+            const noResults = document.getElementById('no-results');
+            if (visibleCount === 0 && searchTerm !== '') {
+                if (!noResults) {
+                    const msg = document.createElement('div');
+                    msg.id = 'no-results';
+                    msg.className = 'no-results';
+                    msg.textContent = `No tokens found matching "${searchTerm}"`;
+                    document.getElementById('table-container').appendChild(msg);
+                }
+            } else if (noResults) {
+                noResults.remove();
+            }
         }
         
         function formatNumber(num) {
@@ -502,8 +592,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${marketData.map((token, index) => `
-                            <tr>
+                        ${marketData.map((token, index) => {
+                            const allCategories = [token.category, ...token.subcategories].join(' ').toLowerCase();
+                            const searchData = `${token.symbol.toLowerCase()} ${token.name.toLowerCase()} ${allCategories}`;
+                            
+                            return `
+                            <tr data-search="${searchData}">
                                 <td>
                                     <a href="https://www.coingecko.com/en/coins/${token.id}" target="_blank" class="token-link">
                                         <div class="token-info">
@@ -516,7 +610,12 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <span class="category-badge ${getCategoryClass(token.category)}">${token.category}</span>
+                                    <div class="category-badges">
+                                        <span class="category-badge ${getCategoryClass(token.category)}">${token.category}</span>
+                                        ${token.subcategories.map(sub => 
+                                            `<span class="category-badge ${getCategoryClass(token.category)}">${sub}</span>`
+                                        ).join('')}
+                                    </div>
                                 </td>
                                 <td class="price">${formatPrice(token.price)}</td>
                                 <td class="${token.change24h >= 0 ? 'change-positive' : 'change-negative'}">
@@ -529,7 +628,7 @@
                                     <canvas id="chart-${index}" class="mini-chart" width="150" height="40"></canvas>
                                 </td>
                             </tr>
-                        `).join('')}
+                        `}).join('')}
                     </tbody>
                 </table>
             `;
